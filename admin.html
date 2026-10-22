@@ -56,7 +56,7 @@ td small{display:block;color:var(--muted);margin-top:4px;font-size:.78rem;overfl
 .config-table{min-width:0;font-family:inherit}.config-table th{font-size:.66rem;padding:9px 7px}.config-table td{padding:8px 7px;font-size:.78rem}
 .config-table input[type=time],.config-table input[type=number]{padding:8px 6px;font-size:.8rem;min-width:0}
 .config-table input[type=checkbox]{width:18px;height:18px;accent-color:var(--red)}
-.config-save{margin-top:13px;background:var(--blue)}.config-hint{font-size:.75rem;color:var(--muted);margin:8px 0}
+.config-save{margin-top:13px;background:var(--blue)}.config-hint{font-size:.75rem;color:var(--muted);margin:8px 0}.reschedule{display:grid;grid-template-columns:1fr 1fr;gap:6px;min-width:220px;margin-top:8px}.reschedule input{min-width:0;padding:7px;font-size:.75rem}.reschedule button{grid-column:1/-1;background:var(--blue);padding:8px}.actions{flex-wrap:wrap}
 @media(max-width:850px){.config-grid{grid-template-columns:1fr}.config-card{padding:13px}.config-table th,.config-table td{padding:7px 5px}}
 td .actions{align-items:stretch;flex-wrap:nowrap}td .actions select{min-width:130px;padding:8px;font-size:.8rem}td .actions button{padding:8px 10px;font-size:.75rem}
 .wa-link{display:inline-flex;align-items:center;justify-content:center;padding:8px 10px;border:2px solid #183d2b;background:#286447;color:#fff;text-decoration:none;font:800 .75rem 'Roboto Slab',serif;white-space:nowrap}
@@ -184,7 +184,7 @@ async function loadAppointments(){
 }
 function render(){
   const rows=appointments.filter(a=>filter==="all"||a.status===filter);
-  $("appointments-body").innerHTML=rows.length?rows.map(a=>'<tr><td><strong>'+escapeHtml(localDate(a.preferred_date))+'</strong><small>'+escapeHtml(String(a.preferred_time||"").slice(0,5))+'</small></td><td><strong>'+escapeHtml(a.customer_name)+'</strong><small>'+escapeHtml(a.phone)+'</small></td><td>'+escapeHtml(a.service)+'</td><td>'+escapeHtml(a.notes||"—")+'</td><td><span class="status">'+escapeHtml(labelStatus(a.status))+'</span></td><td><div class="actions"><select aria-label="Nuevo estado" data-status-for="'+escapeHtml(a.id)+'"><option value="pending" '+(a.status==="pending"?"selected":"")+'>Pendiente</option><option value="confirmed" '+(a.status==="confirmed"?"selected":"")+'>Confirmado</option><option value="cancelled" '+(a.status==="cancelled"?"selected":"")+'>Cancelado</option></select><button data-save="'+escapeHtml(a.id)+'">Guardar</button>'+(whatsappUrl(a)?'<a class="wa-link" href="'+escapeHtml(whatsappUrl(a))+'" target="_blank" rel="noopener noreferrer" aria-label="Abrir WhatsApp para '+escapeHtml(a.customer_name)+'">WhatsApp</a>':'<span class="phone-help" title="Revisá el teléfono e incluí el código de país">Teléfono inválido</span>')+'</div></td></tr>').join(""):'<tr><td colspan="6" class="empty">No hay turnos en este filtro.</td></tr>';
+  $("appointments-body").innerHTML=rows.length?rows.map(a=>'<tr><td><strong>'+escapeHtml(localDate(a.preferred_date))+'</strong><small>'+escapeHtml(String(a.preferred_time||"").slice(0,5))+'</small></td><td><strong>'+escapeHtml(a.customer_name)+'</strong><small>'+escapeHtml(a.phone)+'</small></td><td>'+escapeHtml(a.service)+'</td><td>'+escapeHtml(a.notes||"—")+'</td><td><span class="status">'+escapeHtml(labelStatus(a.status))+'</span></td><td><div class="actions"><select aria-label="Nuevo estado" data-status-for="'+escapeHtml(a.id)+'"><option value="pending" '+(a.status==="pending"?"selected":"")+'>Pendiente</option><option value="confirmed" '+(a.status==="confirmed"?"selected":"")+'>Confirmado</option><option value="cancelled" '+(a.status==="cancelled"?"selected":"")+'>Cancelado</option></select><button data-save="'+escapeHtml(a.id)+'">Guardar</button>'+(whatsappUrl(a)?'<a class="wa-link" href="'+escapeHtml(whatsappUrl(a))+'" target="_blank" rel="noopener noreferrer" aria-label="Abrir WhatsApp para '+escapeHtml(a.customer_name)+'">WhatsApp</a>':'<span class="phone-help" title="Revisá el teléfono e incluí el código de país">Teléfono inválido</span>')+'</div>'+(a.status==="pending"||a.status==="confirmed"?'<div class="reschedule"><input type="date" data-reschedule-date="'+escapeHtml(a.id)+'" value="'+escapeHtml(String(a.preferred_date||"").slice(0,10))+'" aria-label="Nueva fecha para '+escapeHtml(a.customer_name)+'"><input type="time" step="1800" data-reschedule-time="'+escapeHtml(a.id)+'" value="'+escapeHtml(String(a.preferred_time||"").slice(0,5))+'" aria-label="Nuevo horario para '+escapeHtml(a.customer_name)+'"><button type="button" data-reschedule="'+escapeHtml(a.id)+'">Reprogramar</button></div>':'')+'</td></tr>').join(""):'<tr><td colspan="6" class="empty">No hay turnos en este filtro.</td></tr>';
 }
 async function showSession(){
   if(!client){message("login-status","Falta la configuración de InsForge.",true);return}
@@ -203,6 +203,25 @@ $("login-form").addEventListener("submit",async e=>{
   finally{button.disabled=false}
 });
 $("appointments-body").addEventListener("click",async e=>{
+  const reschedule=e.target.closest("button[data-reschedule]");
+  if(reschedule){
+    const id=reschedule.dataset.reschedule;
+    const date=$("appointments-body").querySelector('input[data-reschedule-date="'+id+'"]')?.value;
+    const time=$("appointments-body").querySelector('input[data-reschedule-time="'+id+'"]')?.value;
+    if(!date||!time){message("dashboard-status","Seleccioná una nueva fecha y un horario.",true);return}
+    if(date<localToday()){message("dashboard-status","La nueva fecha no puede estar en el pasado.",true);return}
+    if(!/^([01]\\d|2[0-3]):(00|30)$/.test(time)){message("dashboard-status","Elegí un horario en intervalos de 30 minutos.",true);return}
+    if(!confirm("¿Reprogramar este turno para el "+date+" a las "+time+"?"))return;
+    reschedule.disabled=true;message("dashboard-status","Validando disponibilidad y reprogramando…");
+    try{
+      const {error}=await client.database.rpc("admin_reschedule_barber_appointment",{p_appointment_id:id,p_preferred_date:date,p_preferred_time:time});
+      if(error)throw error;
+      await loadAppointments();
+      message("dashboard-status","Turno reprogramado. Contactá al cliente para informarle el cambio.");
+    }catch(err){message("dashboard-status",err?.message||"No se pudo reprogramar el turno.",true)}
+    finally{reschedule.disabled=false}
+    return;
+  }
   const btn=e.target.closest("button[data-save]");if(!btn)return;
   const id=btn.dataset.save;const select=$("appointments-body").querySelector('select[data-status-for="'+CSS.escape(id)+'"]');if(!select)return;
   const status=select.value;btn.disabled=true;btn.textContent="Guardando…";
