@@ -218,3 +218,19 @@ revoke all on function public.get_available_barber_slots(date, text) from public
 revoke all on function public.create_barber_appointment(text, text, text, date, time, text) from public, anon, authenticated;
 grant execute on function public.get_available_barber_slots(date, text) to anon;
 grant execute on function public.create_barber_appointment(text, text, text, date, time, text) to anon;
+
+-- Servicios activos para que el formulario público refleje la configuración del propietario.
+create or replace function public.get_public_barber_services()
+returns table(service_name text, duration_minutes integer)
+language sql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+  select s.service_name, s.duration_minutes
+  from public.barber_services s
+  where s.is_active = true
+  order by s.service_name;
+$$;
+revoke all on function public.get_public_barber_services() from public, authenticated;
+grant execute on function public.get_public_barber_services() to anon;
