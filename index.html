@@ -44,7 +44,7 @@ form.addEventListener("submit", async event => {
   const { error } = await client.database.from("barber_appointments").insert([{
    customer_name: values.customer_name.trim(), phone: values.phone.trim(), service: values.service,
    preferred_date: values.preferred_date, preferred_time: values.preferred_time,
-   notes: values.notes.trim() || null, status: "pending"
+   notes: values.notes.trim() || null
   }]);
   if (error) throw error;
   form.reset(); dateInput.min = new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
