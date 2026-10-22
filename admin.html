@@ -51,6 +51,8 @@ td small{display:block;color:var(--muted);margin-top:4px;font-size:.78rem;overfl
 .status{display:inline-block;border:1px solid var(--line);padding:4px 8px;font-size:.69rem;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;background:#f4ead7;font-weight:bold}
 .empty{text-align:center;padding:32px!important;color:var(--muted)}
 td .actions{align-items:stretch;flex-wrap:nowrap}td .actions select{min-width:130px;padding:8px;font-size:.8rem}td .actions button{padding:8px 10px;font-size:.75rem}
+.wa-link{display:inline-flex;align-items:center;justify-content:center;padding:8px 10px;border:2px solid #183d2b;background:#286447;color:#fff;text-decoration:none;font:800 .75rem 'Roboto Slab',serif;white-space:nowrap}
+.wa-link:hover{background:#1e5038}.phone-help{font-size:.7rem;color:var(--red);max-width:100px}
 .hidden{display:none!important}.foot{margin:20px 0 0;padding-top:14px;border-top:1px solid var(--line);font-size:.77rem;color:var(--muted)}
 @media(max-width:700px){.wrap{width:min(100% - 24px,1180px)}.head{align-items:flex-start}.brand{font-size:.9rem}.back{font-size:.82rem;white-space:nowrap}main{padding-top:25px}.panel{box-shadow:5px 5px 0 rgba(23,59,97,.16)}.toolbar{align-items:stretch;padding:13px}.toolbar>.actions{display:grid;grid-template-columns:1fr 1fr}.toolbar>.actions button{width:100%;font-size:.78rem;padding:10px 8px}.filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.filters button{font-size:.74rem;padding:10px 6px}}
 @media(max-width:420px){.head{flex-direction:column;gap:10px}h1{font-size:1.8rem}.login{padding:22px 18px}}
@@ -75,6 +77,27 @@ function message(id,text,error=false){const el=$(id);el.textContent=text;el.clas
 function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function localDate(value){return String(value||"").slice(0,10)}
 function labelStatus(value){return ({pending:"Pendiente",confirmed:"Confirmado",cancelled:"Cancelado"})[value]||value}
+function whatsappPhone(value){
+  let digits=String(value||"").replace(/\\D/g,"");
+  if(digits.startsWith("00"))digits=digits.slice(2);
+  if(digits.startsWith("549"))return digits;
+  if(digits.startsWith("54"))return "549"+digits.slice(2).replace(/^9/,"");
+  if(digits.startsWith("0"))digits=digits.slice(1);
+  if(digits.length===10)return "549"+digits;
+  return digits;
+}
+function whatsappMessage(a){
+  const date=localDate(a.preferred_date);
+  const time=String(a.preferred_time||"").slice(0,5);
+  if(a.status==="confirmed")return "Hola "+(a.customer_name||"")+", te confirmamos tu turno en Gentleman's Blade para el "+date+" a las "+time+". Servicio: "+(a.service||"")+". ¡Te esperamos!";
+  if(a.status==="cancelled")return "Hola "+(a.customer_name||"")+", te informamos que tu turno en Gentleman's Blade del "+date+" a las "+time+" fue cancelado. Para coordinar otro horario, respondé este mensaje.";
+  return "Hola "+(a.customer_name||"")+", recibimos tu solicitud de turno en Gentleman's Blade para el "+date+" a las "+time+". Servicio: "+(a.service||"")+". Te confirmaremos la disponibilidad pronto.";
+}
+function whatsappUrl(a){
+  const phone=whatsappPhone(a.phone);
+  if(phone.length<10||phone.length>15)return "";
+  return "https://wa.me/"+phone+"?text="+encodeURIComponent(whatsappMessage(a));
+}
 async function loadAppointments(){
   message("dashboard-status","Actualizando agenda…");
   const {data,error}=await client.database.from("barber_appointments").select("id,customer_name,phone,service,preferred_date,preferred_time,notes,status,created_at").order("preferred_date",{ascending:true}).order("preferred_time",{ascending:true}).limit(250);
@@ -85,7 +108,7 @@ async function loadAppointments(){
 }
 function render(){
   const rows=appointments.filter(a=>filter==="all"||a.status===filter);
-  $("appointments-body").innerHTML=rows.length?rows.map(a=>'<tr><td><strong>'+escapeHtml(localDate(a.preferred_date))+'</strong><small>'+escapeHtml(String(a.preferred_time||"").slice(0,5))+'</small></td><td><strong>'+escapeHtml(a.customer_name)+'</strong><small>'+escapeHtml(a.phone)+'</small></td><td>'+escapeHtml(a.service)+'</td><td>'+escapeHtml(a.notes||"—")+'</td><td><span class="status">'+escapeHtml(labelStatus(a.status))+'</span></td><td><div class="actions"><select aria-label="Nuevo estado" data-status-for="'+escapeHtml(a.id)+'"><option value="pending" '+(a.status==="pending"?"selected":"")+'>Pendiente</option><option value="confirmed" '+(a.status==="confirmed"?"selected":"")+'>Confirmado</option><option value="cancelled" '+(a.status==="cancelled"?"selected":"")+'>Cancelado</option></select><button data-save="'+escapeHtml(a.id)+'">Guardar</button></div></td></tr>').join(""):'<tr><td colspan="6" class="empty">No hay turnos en este filtro.</td></tr>';
+  $("appointments-body").innerHTML=rows.length?rows.map(a=>'<tr><td><strong>'+escapeHtml(localDate(a.preferred_date))+'</strong><small>'+escapeHtml(String(a.preferred_time||"").slice(0,5))+'</small></td><td><strong>'+escapeHtml(a.customer_name)+'</strong><small>'+escapeHtml(a.phone)+'</small></td><td>'+escapeHtml(a.service)+'</td><td>'+escapeHtml(a.notes||"—")+'</td><td><span class="status">'+escapeHtml(labelStatus(a.status))+'</span></td><td><div class="actions"><select aria-label="Nuevo estado" data-status-for="'+escapeHtml(a.id)+'"><option value="pending" '+(a.status==="pending"?"selected":"")+'>Pendiente</option><option value="confirmed" '+(a.status==="confirmed"?"selected":"")+'>Confirmado</option><option value="cancelled" '+(a.status==="cancelled"?"selected":"")+'>Cancelado</option></select><button data-save="'+escapeHtml(a.id)+'">Guardar</button>'+(whatsappUrl(a)?'<a class="wa-link" href="'+escapeHtml(whatsappUrl(a))+'" target="_blank" rel="noopener noreferrer" aria-label="Abrir WhatsApp para '+escapeHtml(a.customer_name)+'">WhatsApp</a>':'<span class="phone-help" title="Revisá el teléfono e incluí el código de país">Teléfono inválido</span>')+'</div></td></tr>').join(""):'<tr><td colspan="6" class="empty">No hay turnos en este filtro.</td></tr>';
 }
 async function showSession(){
   if(!client){message("login-status","Falta la configuración de InsForge.",true);return}
