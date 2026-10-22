@@ -111,6 +111,7 @@ declare
   v_duration integer;
   v_open time;
   v_close time;
+  v_closed boolean;
   v_open_minutes integer;
   v_close_minutes integer;
   v_now_local timestamp;
