@@ -51,7 +51,13 @@ form.addEventListener("submit", async event => {
   status.textContent = "Solicitud guardada. La barbería debe confirmar el turno.";
  } catch (error) {
   console.error("Error al guardar la solicitud:", error);
-  status.textContent = "No se pudo guardar la solicitud. Verificá la conexión y los permisos de InsForge e intentá nuevamente.";
+  const detail = [
+   error?.message || error?.error || "Error desconocido",
+   error?.code ? "Código: " + error.code : "",
+   error?.details || "",
+   error?.hint || ""
+  ].filter(Boolean).join(" — ");
+  status.textContent = "No se pudo guardar: " + detail;
   status.style.color = "var(--red)";
  } finally { submit.disabled = false; submit.textContent = "Enviar solicitud ↗"; }
 });
