@@ -17,7 +17,7 @@ Este frontend todavía no está conectado a InsForge. Para persistir reservas, c
 
 ## Reservas con InsForge
 
-El formulario envía solicitudes persistentes a la tabla `public.barber_appointments` del proyecto InsForge existente.
+El formulario envía solicitudes persistentes a la tabla `public.barber_appointments` del proyecto InsForge existente. La agenda inteligente consulta slots disponibles y crea reservas mediante funciones SQL transaccionales.
 
 1. Aplicá el SQL de `insforge/barber_appointments.sql` en el editor SQL de ese proyecto.
 2. `insforge-config.js` contiene la URL y la **clave pública ANON_KEY** necesaria para el frontend estático. No pongas una API key administrativa en este archivo.
@@ -31,3 +31,15 @@ La migración activa RLS y permite al rol anónimo únicamente insertar solicitu
 ### Publicación
 
 Subí `index.html`, `insforge-config.js` y la migración SQL al mismo despliegue estático. No se debe publicar ninguna clave administrativa o secreta.
+
+
+### Agenda inteligente — migración adicional
+
+La migración `insforge/agenda_inteligente.sql` añade:
+- Disponibilidad calculada por servicio, duración y horario de atención (martes a viernes 09:00–19:00; sábado 09:00–17:00; lunes y domingo cerrado).
+- Horarios cada 30 minutos y exclusión de turnos pasados según hora de Argentina.
+- Prevención transaccional de solapamientos entre solicitudes pendientes y turnos confirmados, incluso ante solicitudes simultáneas.
+- Funciones públicas limitadas a devolver horarios libres y crear solicitudes. No habilita lectura pública de nombres, teléfonos ni notas.
+- Validación de fecha, hora, servicio, nombre, teléfono y observaciones en la base de datos.
+
+**Activación necesaria:** ejecutar `insforge/agenda_inteligente.sql` una vez en el editor SQL del mismo proyecto InsForge. Después esperar el despliegue de GitHub Pages y probar con dos solicitudes al mismo horario: la primera debe guardarse y la segunda debe rechazarse. El código web por sí solo no activa funciones en la base de datos.
