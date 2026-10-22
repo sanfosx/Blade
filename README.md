@@ -28,6 +28,13 @@ El formulario envía solicitudes persistentes a la tabla `public.barber_appointm
 
 La migración activa RLS y permite al rol anónimo únicamente insertar solicitudes pendientes; no concede lectura, actualización ni eliminación. La validación del navegador mejora la experiencia, pero las restricciones de la base de datos son la validación de seguridad. Antes de producción, agregá protección contra spam/rate limiting y una vista o panel administrativo con autenticación para gestionar solicitudes.
 
+### Mensajes de WhatsApp desde el panel
+
+- Cada reserva incluye un enlace para abrir WhatsApp con un mensaje preparado según su estado: solicitud recibida, turno confirmado o turno cancelado.
+- El mensaje **no se envía automáticamente**: el administrador lo revisa y lo envía desde WhatsApp.
+- Para números locales argentinos de 10 dígitos, el enlace agrega el prefijo móvil internacional `549`. También acepta números que ya comienzan con `54` o `549`.
+- Si el teléfono no tiene un formato reconocible, revisá el número y guardalo con el código de país. No se integra la API de WhatsApp ni se almacenan tokens de WhatsApp.
+
 ### Publicación
 
 Subí `index.html`, `insforge-config.js` y la migración SQL al mismo despliegue estático. No se debe publicar ninguna clave administrativa o secreta.
