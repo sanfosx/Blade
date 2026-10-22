@@ -50,6 +50,14 @@ td{font-size:.88rem}td strong{font-family:'Roboto Slab',serif;font-size:.9rem}
 td small{display:block;color:var(--muted);margin-top:4px;font-size:.78rem;overflow-wrap:anywhere}
 .status{display:inline-block;border:1px solid var(--line);padding:4px 8px;font-size:.69rem;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;background:#f4ead7;font-weight:bold}
 .empty{text-align:center;padding:32px!important;color:var(--muted)}
+.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:26px 0}
+.config-card{border:1.5px solid var(--ink);background:#f8f0df;padding:18px;min-width:0}
+.config-card h2{margin-bottom:8px}.config-card>p{font-size:.82rem;color:var(--muted)}
+.config-table{min-width:0;font-family:inherit}.config-table th{font-size:.66rem;padding:9px 7px}.config-table td{padding:8px 7px;font-size:.78rem}
+.config-table input[type=time],.config-table input[type=number]{padding:8px 6px;font-size:.8rem;min-width:0}
+.config-table input[type=checkbox]{width:18px;height:18px;accent-color:var(--red)}
+.config-save{margin-top:13px;background:var(--blue)}.config-hint{font-size:.75rem;color:var(--muted);margin:8px 0}
+@media(max-width:850px){.config-grid{grid-template-columns:1fr}.config-card{padding:13px}.config-table th,.config-table td{padding:7px 5px}}
 td .actions{align-items:stretch;flex-wrap:nowrap}td .actions select{min-width:130px;padding:8px;font-size:.8rem}td .actions button{padding:8px 10px;font-size:.75rem}
 .wa-link{display:inline-flex;align-items:center;justify-content:center;padding:8px 10px;border:2px solid #183d2b;background:#286447;color:#fff;text-decoration:none;font:800 .75rem 'Roboto Slab',serif;white-space:nowrap}
 .wa-link:hover{background:#1e5038}.phone-help{font-size:.7rem;color:var(--red);max-width:100px}
@@ -63,7 +71,21 @@ td .actions{align-items:stretch;flex-wrap:nowrap}td .actions select{min-width:13
 <main class="wrap">
 <section id="login-panel" class="panel login"><h1>Acceso del propietario</h1><p class="muted">Ingresá con un usuario de InsForge autorizado por el propietario. No hay registro público desde este panel.</p>
 <form id="login-form"><label for="email">Correo electrónico</label><input id="email" type="email" autocomplete="username" required><label for="password">Contraseña</label><input id="password" type="password" autocomplete="current-password" required minlength="8"><button id="login-button" type="submit" style="margin-top:18px;width:100%">Ingresar</button></form><p id="login-status" class="notice" role="status" aria-live="polite"></p></section>
-<section id="dashboard" class="hidden"><div class="panel"><h1>Agenda de turnos</h1><p class="muted">Datos visibles solo para cuentas promovidas como administradoras en la base de datos.</p><div class="toolbar"><div><strong id="whoami"></strong><p class="muted" style="margin:4px 0">Gestioná solicitudes y confirmaciones.</p></div><div class="actions"><button id="refresh">Actualizar</button><button id="logout" style="background:var(--blue)">Cerrar sesión</button></div></div><div class="filters" aria-label="Filtrar reservas"><button data-filter="all" aria-pressed="true">Todos</button><button data-filter="pending" aria-pressed="false">Pendientes</button><button data-filter="confirmed" aria-pressed="false">Confirmados</button><button data-filter="cancelled" aria-pressed="false">Cancelados</button></div><p id="dashboard-status" class="notice" role="status" aria-live="polite"></p><div class="tablewrap"><table><thead><tr><th>Fecha / hora</th><th>Cliente</th><th>Servicio</th><th>Observaciones</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="appointments-body"><tr><td colspan="6" class="empty">Cargando agenda…</td></tr></tbody></table></div><p class="foot">La agenda muestra los turnos registrados en InsForge. Verificá la identidad del cliente antes de confirmar cambios por canales externos.</p></div></section>
+<section id="dashboard" class="hidden"><div class="panel"><h1>Agenda de turnos</h1><p class="muted">Datos visibles solo para cuentas promovidas como administradoras en la base de datos.</p><div class="toolbar"><div><strong id="whoami"></strong><p class="muted" style="margin:4px 0">Gestioná solicitudes y confirmaciones.</p></div><div class="actions"><button id="refresh">Actualizar</button><button id="logout" style="background:var(--blue)">Cerrar sesión</button></div></div><section class="config-grid" aria-label="Configuración de agenda">
+<div class="config-card">
+<h2>Horarios de atención</h2>
+<p>Configurá la apertura y el cierre por día. Los cambios afectan la disponibilidad pública al guardarlos.</p>
+<div class="tablewrap"><table class="config-table"><thead><tr><th>Día</th><th>Abierto</th><th>Apertura</th><th>Cierre</th></tr></thead><tbody id="hours-body"><tr><td colspan="4" class="empty">Cargando horarios…</td></tr></tbody></table></div>
+<button id="save-hours" class="config-save" type="button">Guardar horarios</button><p id="hours-status" class="notice" role="status" aria-live="polite"></p>
+</div>
+<div class="config-card">
+<h2>Duración de servicios</h2>
+<p>La duración se utiliza para calcular los espacios disponibles y evitar superposiciones. Valores en múltiplos de 15 minutos.</p>
+<div class="tablewrap"><table class="config-table"><thead><tr><th>Servicio</th><th>Minutos</th><th>Activo</th></tr></thead><tbody id="services-body"><tr><td colspan="3" class="empty">Cargando servicios…</td></tr></tbody></table></div>
+<button id="save-services" class="config-save" type="button">Guardar servicios</button><p id="services-status" class="notice" role="status" aria-live="polite"></p>
+</div>
+</section>
+<div class="filters" aria-label="Filtrar reservas"><button data-filter="all" aria-pressed="true">Todos</button><button data-filter="pending" aria-pressed="false">Pendientes</button><button data-filter="confirmed" aria-pressed="false">Confirmados</button><button data-filter="cancelled" aria-pressed="false">Cancelados</button></div><p id="dashboard-status" class="notice" role="status" aria-live="polite"></p><div class="tablewrap"><table><thead><tr><th>Fecha / hora</th><th>Cliente</th><th>Servicio</th><th>Observaciones</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="appointments-body"><tr><td colspan="6" class="empty">Cargando agenda…</td></tr></tbody></table></div><p class="foot">La agenda muestra los turnos registrados en InsForge. Verificá la identidad del cliente antes de confirmar cambios por canales externos.</p></div></section>
 </main>
 <script src="./insforge-config.js"></script>
 <script type="module">
@@ -72,7 +94,7 @@ const cfg=window.INSFORGE_CONFIG||{};
 const client=cfg.url&&cfg.anonKey?createClient({baseUrl:cfg.url,anonKey:cfg.anonKey}):null;
 const $=id=>document.getElementById(id);
 const loginPanel=$("login-panel"), dashboard=$("dashboard");
-let appointments=[], filter="all";
+let appointments=[], filter="all", businessHours=[], barberServices=[];
 function message(id,text,error=false){const el=$(id);el.textContent=text;el.classList.toggle("error",error)}
 function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function localDate(value){return String(value||"").slice(0,10)}
@@ -98,6 +120,60 @@ function whatsappUrl(a){
   if(phone.length<10||phone.length>15)return "";
   return "https://wa.me/"+phone+"?text="+encodeURIComponent(whatsappMessage(a));
 }
+async function loadSettings(){
+  message("hours-status","Cargando configuración…");
+  message("services-status","Cargando servicios…");
+  const [hoursResult, servicesResult] = await Promise.all([
+    client.database.from("barber_business_hours").select("iso_weekday,day_name,opens_at,closes_at,is_closed").order("iso_weekday",{ascending:true}),
+    client.database.from("barber_services").select("service_name,duration_minutes,is_active").order("service_name",{ascending:true})
+  ]);
+  if(hoursResult.error){message("hours-status",hoursResult.error.message||"No se pudieron cargar los horarios. Aplicá la migración agenda_configurable.sql.",true)}
+  else {businessHours=Array.isArray(hoursResult.data)?hoursResult.data:[];renderHours();message("hours-status","Horarios cargados.")}
+  if(servicesResult.error){message("services-status",servicesResult.error.message||"No se pudieron cargar los servicios. Aplicá la migración agenda_configurable.sql.",true)}
+  else {barberServices=Array.isArray(servicesResult.data)?servicesResult.data:[];renderServices();message("services-status","Servicios cargados.")}
+}
+function renderHours(){
+  $("hours-body").innerHTML=businessHours.length?businessHours.map(h=>'<tr data-day="'+h.iso_weekday+'"><td><strong>'+escapeHtml(h.day_name)+'</strong></td><td><input type="checkbox" data-open="'+h.iso_weekday+'" aria-label="Abrir '+escapeHtml(h.day_name)+'" '+(!h.is_closed?'checked':'')+'></td><td><input type="time" data-opens="'+h.iso_weekday+'" value="'+escapeHtml(String(h.opens_at||"09:00").slice(0,5))+'" '+(h.is_closed?'disabled':'')+' aria-label="Apertura '+escapeHtml(h.day_name)+'"></td><td><input type="time" data-closes="'+h.iso_weekday+'" value="'+escapeHtml(String(h.closes_at||"19:00").slice(0,5))+'" '+(h.is_closed?'disabled':'')+' aria-label="Cierre '+escapeHtml(h.day_name)+'"></td></tr>').join(""):'<tr><td colspan="4" class="empty">No hay horarios configurados.</td></tr>';
+}
+function renderServices(){
+  $("services-body").innerHTML=barberServices.length?barberServices.map((s,i)=>'<tr data-service-index="'+i+'"><td><strong>'+escapeHtml(s.service_name)+'</strong></td><td><input type="number" min="15" max="240" step="15" data-duration="'+i+'" value="'+Number(s.duration_minutes)+'" aria-label="Duración de '+escapeHtml(s.service_name)+'"></td><td><input type="checkbox" data-active="'+i+'" aria-label="Activar '+escapeHtml(s.service_name)+'" '+(s.is_active?'checked':'')+'></td></tr>').join(""):'<tr><td colspan="3" class="empty">No hay servicios configurados.</td></tr>';
+}
+$("hours-body").addEventListener("change",e=>{
+  const check=e.target.closest("input[data-open]");if(!check)return;
+  const day=check.dataset.open;
+  ['opens','closes'].forEach(kind=>{const field=$("hours-body").querySelector('input[data-'+kind+'="'+day+'"]');if(field)field.disabled=!check.checked});
+});
+$("save-hours").addEventListener("click",async()=>{
+  const button=$("save-hours");button.disabled=true;message("hours-status","Guardando horarios…");
+  try{
+    for(const h of businessHours){
+      const day=String(h.iso_weekday);
+      const isClosed=!$("hours-body").querySelector('input[data-open="'+day+'"]').checked;
+      const opens=$("hours-body").querySelector('input[data-opens="'+day+'"]').value;
+      const closes=$("hours-body").querySelector('input[data-closes="'+day+'"]').value;
+      if(!isClosed&&(!opens||!closes||opens>=closes))throw new Error("Revisá apertura y cierre de "+h.day_name+": el cierre debe ser posterior a la apertura.");
+      const values={is_closed:isClosed,opens_at:isClosed?null:opens,closes_at:isClosed?null:closes,updated_at:new Date().toISOString()};
+      const {error}=await client.database.from("barber_business_hours").update(values).eq("iso_weekday",h.iso_weekday);
+      if(error)throw error;
+    }
+    await loadSettings();message("hours-status","Horarios guardados. La disponibilidad de reservas ya usa estos valores.");
+  }catch(err){message("hours-status",err?.message||"No se pudieron guardar los horarios.",true)}
+  finally{button.disabled=false}
+});
+$("save-services").addEventListener("click",async()=>{
+  const button=$("save-services");button.disabled=true;message("services-status","Guardando servicios…");
+  try{
+    for(let i=0;i<barberServices.length;i++){
+      const duration=Number($("services-body").querySelector('input[data-duration="'+i+'"]').value);
+      const active=$("services-body").querySelector('input[data-active="'+i+'"]').checked;
+      if(!Number.isInteger(duration)||duration<15||duration>240||duration%15!==0)throw new Error("La duración de "+barberServices[i].service_name+" debe ser de 15 a 240 minutos, en múltiplos de 15.");
+      const {error}=await client.database.from("barber_services").update({duration_minutes:duration,is_active:active,updated_at:new Date().toISOString()}).eq("service_name",barberServices[i].service_name);
+      if(error)throw error;
+    }
+    await loadSettings();message("services-status","Servicios guardados. Los cambios afectan el cálculo de disponibilidad.");
+  }catch(err){message("services-status",err?.message||"No se pudieron guardar los servicios.",true)}
+  finally{button.disabled=false}
+});
 async function loadAppointments(){
   message("dashboard-status","Actualizando agenda…");
   const {data,error}=await client.database.from("barber_appointments").select("id,customer_name,phone,service,preferred_date,preferred_time,notes,status,created_at").order("preferred_date",{ascending:true}).order("preferred_time",{ascending:true}).limit(250);
@@ -113,7 +189,7 @@ function render(){
 async function showSession(){
   if(!client){message("login-status","Falta la configuración de InsForge.",true);return}
   const {data,error}=await client.auth.getCurrentUser();
-  if(!error&&data?.user){loginPanel.classList.add("hidden");dashboard.classList.remove("hidden");$("whoami").textContent=data.user.email||"Sesión autenticada";await loadAppointments()}
+  if(!error&&data?.user){loginPanel.classList.add("hidden");dashboard.classList.remove("hidden");$("whoami").textContent=data.user.email||"Sesión autenticada";await Promise.all([loadAppointments(),loadSettings()])}
 }
 $("login-form").addEventListener("submit",async e=>{
   e.preventDefault();if(!client){message("login-status","Falta la configuración de InsForge.",true);return}
@@ -122,7 +198,7 @@ $("login-form").addEventListener("submit",async e=>{
     const {data,error}=await client.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
     if(error)throw error;
     loginPanel.classList.add("hidden");dashboard.classList.remove("hidden");$("whoami").textContent=data?.user?.email||$("email").value.trim();
-    await loadAppointments();
+    await Promise.all([loadAppointments(),loadSettings()]);
   }catch(err){message("login-status",err?.message||"No se pudo iniciar sesión.",true)}
   finally{button.disabled=false}
 });
