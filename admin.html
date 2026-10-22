@@ -98,6 +98,7 @@ let appointments=[], filter="all", businessHours=[], barberServices=[];
 function message(id,text,error=false){const el=$(id);el.textContent=text;el.classList.toggle("error",error)}
 function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function localDate(value){return String(value||"").slice(0,10)}
+function localToday(){const now=new Date();const year=now.getFullYear();const month=String(now.getMonth()+1).padStart(2,"0");const day=String(now.getDate()).padStart(2,"0");return year+"-"+month+"-"+day}
 function labelStatus(value){return ({pending:"Pendiente",confirmed:"Confirmado",cancelled:"Cancelado"})[value]||value}
 function whatsappPhone(value){
   let digits=String(value||"").replace(/\D/g,"");
