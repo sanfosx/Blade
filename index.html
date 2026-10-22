@@ -29,7 +29,7 @@ const status = document.getElementById("booking-status");
 const submit = document.getElementById("booking-submit");
 const dateInput = document.getElementById("booking-date");
 const today = new Date(); dateInput.min = new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
-const validPhone = value => /^[+()\\d\\s.-]{7,30}$/.test(value);
+const validPhone = value => /^[+()\d\s.-]{7,30}$/.test(value);
 form.addEventListener("submit", async event => {
  event.preventDefault(); status.textContent = ""; status.style.color = "var(--ink)";
  if (!form.reportValidity()) return;
