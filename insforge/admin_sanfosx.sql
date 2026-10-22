@@ -2,8 +2,7 @@
 -- Proyecto: InsForge existente. Ejecutar DESPUÉS de insforge/agenda_inteligente.sql.
 -- Requisito: sanfosx@gmail.com debe existir en InsForge Authentication > Users.
 -- Este script no crea usuarios ni habilita el registro público.
-
-begin;
+-- No usar BEGIN/COMMIT: el editor SQL de InsForge gestiona las transacciones.
 
 -- Lista de usuarios autorizados a administrar la agenda.
 create table if not exists public.barber_admins (
@@ -55,8 +54,8 @@ create policy "barber admins can update appointments"
 grant select on public.barber_appointments to authenticated;
 grant update (status) on public.barber_appointments to authenticated;
 
--- Promueve exactamente el usuario propietario indicado. Si no existe en Auth,
--- la operación falla y revierte toda la transacción: no se crea acceso ficticio.
+-- Promueve exactamente el usuario propietario indicado.
+-- Si no existe en Auth, esta sección lanza un error y no lo crea.
 do $$
 declare
   v_user_id uuid;
@@ -76,8 +75,6 @@ begin
   on conflict (user_id) do nothing;
 end;
 $$;
-
-commit;
 
 -- Verificación: debe devolver una fila para sanfosx@gmail.com.
 select u.email, ba.user_id, ba.created_at
