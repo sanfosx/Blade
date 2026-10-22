@@ -84,7 +84,7 @@ function whatsappPhone(value){
   if(digits.startsWith("54"))return "549"+digits.slice(2).replace(/^9/,"");
   if(digits.startsWith("0"))digits=digits.slice(1);
   if(digits.length===10)return "549"+digits;
-  return digits;
+  return "";
 }
 function whatsappMessage(a){
   const date=localDate(a.preferred_date);
