@@ -94,7 +94,7 @@ set search_path = public, pg_temp
 as $$
   select s.duration_minutes
   from public.barber_services s
-  where s.service_name = p_service and s.is_active = true;
+  where s.service_name = p_service;
 $$;
 revoke all on function public.barber_service_duration_minutes(text) from public, anon, authenticated;
 
@@ -117,8 +117,11 @@ declare
   v_now_local timestamp;
   v_start_minutes integer;
 begin
+  if not exists (select 1 from public.barber_services s where s.service_name = p_service and s.is_active = true) then
+    raise exception 'Servicio no válido o inactivo';
+  end if;
   v_duration := public.barber_service_duration_minutes(p_service);
-  if v_duration is null then raise exception 'Servicio no válido o inactivo'; end if;
+  if v_duration is null then raise exception 'Servicio no válido'; end if;
   v_now_local := timezone('America/Argentina/Buenos_Aires', now());
   if p_preferred_date is null or p_preferred_date < v_now_local::date then return; end if;
 
