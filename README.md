@@ -43,3 +43,12 @@ La migración `insforge/agenda_inteligente.sql` añade:
 - Validación de fecha, hora, servicio, nombre, teléfono y observaciones en la base de datos.
 
 **Activación necesaria:** ejecutar `insforge/agenda_inteligente.sql` una vez en el editor SQL del mismo proyecto InsForge. Después esperar el despliegue de GitHub Pages y probar con dos solicitudes al mismo horario: la primera debe guardarse y la segunda debe rechazarse. El código web por sí solo no activa funciones en la base de datos.
+
+
+### Panel privado de administración
+
+- Abrí `/admin.html` para iniciar sesión con InsForge.
+- Ejecutá `insforge/admin_panel.sql` una vez en el mismo backend para habilitar la tabla de administradores y las políticas RLS del panel.
+- Creá/verificá la cuenta del propietario en InsForge Authentication. Después, en el SQL comentado al final de la migración, reemplazá el correo por el correo exacto del propietario y ejecutá solo esa sentencia de promoción.
+- El panel permite consultar reservas y cambiar su estado. Las políticas de base de datos limitan estas operaciones a usuarios promovidos explícitamente.
+- No habilites registro público para administrar el negocio y nunca incluyas credenciales administrativas en archivos del frontend.
