@@ -44,10 +44,10 @@ const setStatus = (message, isError = false) => {
   status.textContent = message;
   status.style.color = isError ? "var(--red)" : "var(--ink)";
 };
-const resetTimeOptions = (message = "Primero elegí un servicio y una fecha") => {
+const resetTimeOptions = (message = "Primero elegí un servicio y una fecha", isError = false) => {
   timeInput.replaceChildren(new Option("Seleccionar horario", ""));
   timeInput.disabled = true;
-  if (message) setStatus(message);
+  if (message) setStatus(message, isError);
 };
 async function loadAvailableSlots() {
   const date = dateInput.value;
