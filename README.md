@@ -59,3 +59,18 @@ La migración `insforge/agenda_inteligente.sql` añade:
 - Creá/verificá la cuenta del propietario en InsForge Authentication. Después, en el SQL comentado al final de la migración, reemplazá el correo por el correo exacto del propietario y ejecutá solo esa sentencia de promoción.
 - El panel permite consultar reservas y cambiar su estado. Las políticas de base de datos limitan estas operaciones a usuarios promovidos explícitamente.
 - No habilites registro público para administrar el negocio y nunca incluyas credenciales administrativas en archivos del frontend.
+
+
+### Configuración editable de agenda
+
+La migración adicional `insforge/agenda_configurable.sql` permite administrar horarios y duración de servicios desde `/admin.html`.
+
+**Orden para activarla en el proyecto InsForge existente:**
+1. Confirmá que ya estén aplicadas `insforge/agenda_inteligente.sql` y `insforge/admin_sanfosx.sql`.
+2. Ejecutá una sola vez `insforge/agenda_configurable.sql` desde el editor SQL de InsForge. No agregues `BEGIN` ni `COMMIT`.
+3. Abrí el panel de administración, iniciá sesión y usá las secciones **Horarios de atención** y **Duración de servicios**.
+4. En el sitio público, los horarios de atención y servicios activos se consultan desde las funciones públicas de solo lectura. La disponibilidad y la reserva se validan con la configuración guardada en la base de datos.
+
+**Seguridad:** las tablas de configuración tienen RLS y solo los usuarios autorizados en `barber_admins` pueden leerlas o modificarlas directamente. El público solo puede ejecutar funciones limitadas para consultar los horarios/servicios publicados y reservar; no recibe acceso directo a las tablas privadas.
+
+**Validación recomendada después de aplicar el SQL:** cambiar temporalmente la apertura de un día y la duración de un servicio desde el panel; comprobar que el sitio público refleje esos cambios y que la selección de turnos respete el nuevo horario. Después restaurá los horarios definitivos del negocio.
