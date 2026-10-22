@@ -74,3 +74,16 @@ La migración adicional `insforge/agenda_configurable.sql` permite administrar h
 **Seguridad:** las tablas de configuración tienen RLS y solo los usuarios autorizados en `barber_admins` pueden leerlas o modificarlas directamente. El público solo puede ejecutar funciones limitadas para consultar los horarios/servicios publicados y reservar; no recibe acceso directo a las tablas privadas.
 
 **Validación recomendada después de aplicar el SQL:** cambiar temporalmente la apertura de un día y la duración de un servicio desde el panel; comprobar que el sitio público refleje esos cambios y que la selección de turnos respete el nuevo horario. Después restaurá los horarios definitivos del negocio.
+
+
+### Reprogramar turnos desde el panel
+
+La migración `insforge/gestion_turnos.sql` agrega la función segura `admin_reschedule_barber_appointment`. Permite al administrador reprogramar turnos pendientes o confirmados, validando fecha, horario de atención, duración del servicio y conflictos con otros turnos.
+
+**Activación:**
+1. Aplicá primero `agenda_inteligente.sql`, `admin_sanfosx.sql` y `agenda_configurable.sql`.
+2. Ejecutá `insforge/gestion_turnos.sql` en el editor SQL de InsForge, sin `BEGIN` ni `COMMIT`.
+3. Abrí `/admin.html`. Cada turno pendiente o confirmado tendrá campos para fecha y horario, más el botón **Reprogramar**.
+4. Después de confirmar el cambio, avisale al cliente por WhatsApp; el sistema no envía mensajes automáticamente.
+
+La función verifica que el usuario autenticado sea administrador. El panel usa RPC para reprogramar y no necesita conceder permisos directos de actualización sobre las fechas de las reservas.
