@@ -65,8 +65,8 @@ begin
   end if;
 
   for v_start_minutes in
-    select gs
-    from generate_series(v_open_minutes, v_close_minutes - v_duration, 30) as gs
+    select minute_offset
+    from generate_series(v_open_minutes, v_close_minutes - v_duration, 30) as slots(minute_offset)
   loop
     if p_preferred_date > v_now_local::date
        or (time '00:00' + make_interval(mins => v_start_minutes)) > v_now_local::time then
