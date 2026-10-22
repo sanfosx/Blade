@@ -28,37 +28,117 @@ const form = document.getElementById("booking-form");
 const status = document.getElementById("booking-status");
 const submit = document.getElementById("booking-submit");
 const dateInput = document.getElementById("booking-date");
-const today = new Date(); dateInput.min = new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+const serviceInput = document.getElementById("booking-service");
+const timeInput = document.getElementById("booking-time");
+const phoneInput = document.getElementById("booking-phone");
+const client = config.url && config.anonKey
+  ? createClient({ baseUrl: config.url, anonKey: config.anonKey })
+  : null;
 const validPhone = value => /^[+()\d\s.-]{7,30}$/.test(value);
-form.addEventListener("submit", async event => {
- event.preventDefault(); status.textContent = ""; status.style.color = "var(--ink)";
- if (!form.reportValidity()) return;
- if (document.getElementById("website").value) return;
- const values = Object.fromEntries(new FormData(form).entries());
- if (!validPhone(values.phone)) { status.textContent = "Revisá el teléfono ingresado."; status.style.color = "var(--red)"; return; }
- if (values.preferred_date < dateInput.min) { status.textContent = "Elegí una fecha de hoy en adelante."; status.style.color = "var(--red)"; return; }
- if (!config.url || !config.anonKey || config.anonKey.includes("REEMPLAZAR")) { status.textContent = "Falta configurar la conexión con InsForge."; status.style.color = "var(--red)"; return; }
- submit.disabled = true; submit.textContent = "Enviando…";
- try {
-  const client = createClient({ baseUrl: config.url, anonKey: config.anonKey });
-  const { error } = await client.database.from("barber_appointments").insert([{
-   customer_name: values.customer_name.trim(), phone: values.phone.trim(), service: values.service,
-   preferred_date: values.preferred_date, preferred_time: values.preferred_time,
-   notes: values.notes.trim() || null
-  }]);
-  if (error) throw error;
-  form.reset(); dateInput.min = new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
-  status.textContent = "Solicitud guardada. La barbería debe confirmar el turno.";
- } catch (error) {
-  console.error("Error al guardar la solicitud:", error);
-  const detail = [
-   error?.message || error?.error || "Error desconocido",
-   error?.code ? "Código: " + error.code : "",
-   error?.details || "",
-   error?.hint || ""
-  ].filter(Boolean).join(" — ");
-  status.textContent = "No se pudo guardar: " + detail;
-  status.style.color = "var(--red)";
- } finally { submit.disabled = false; submit.textContent = "Enviar solicitud ↗"; }
+const localToday = () => {
+  const now = new Date();
+  return new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+};
+dateInput.min = localToday();
+const setStatus = (message, isError = false) => {
+  status.textContent = message;
+  status.style.color = isError ? "var(--red)" : "var(--ink)";
+};
+const resetTimeOptions = (message = "Primero elegí un servicio y una fecha") => {
+  timeInput.replaceChildren(new Option("Seleccionar horario", ""));
+  timeInput.disabled = true;
+  if (message) setStatus(message);
+};
+async function loadAvailableSlots() {
+  const date = dateInput.value;
+  const service = serviceInput.value;
+  resetTimeOptions("Consultando disponibilidad…");
+  if (!client) {
+    resetTimeOptions("Falta configurar la conexión con InsForge.");
+    return;
+  }
+  if (!date || !service) {
+    resetTimeOptions("Elegí un servicio y una fecha para consultar horarios.");
+    return;
+  }
+  if (date < localToday()) {
+    resetTimeOptions("Elegí una fecha de hoy en adelante.");
+    return;
+  }
+  try {
+    const { data, error } = await client.database.rpc("get_available_barber_slots", {
+      p_preferred_date: date,
+      p_service: service
+    });
+    if (error) throw error;
+    const slots = Array.isArray(data) ? data : [];
+    timeInput.replaceChildren(new Option("Seleccionar horario", ""));
+    slots.forEach(item => {
+      const value = String(item.slot || "").slice(0, 5);
+      if (value) timeInput.add(new Option(value, value));
+    });
+    timeInput.disabled = false;
+    if (!slots.length) {
+      setStatus("No hay horarios disponibles para ese servicio y fecha.", true);
+      return;
+    }
+    setStatus("Horarios disponibles actualizados.");
+  } catch (error) {
+    console.error("Error al consultar disponibilidad:", error);
+    resetTimeOptions("No se pudo consultar la agenda. Revisá que la migración de agenda inteligente esté aplicada en InsForge.", true);
+  }
+}
+dateInput.addEventListener("change", loadAvailableSlots);
+serviceInput.addEventListener("change", loadAvailableSlots);
+phoneInput.addEventListener("input", () => {
+  phoneInput.setCustomValidity(validPhone(phoneInput.value.trim()) ? "" : "Ingresá un teléfono de 7 a 30 caracteres con números y símbolos habituales.");
 });
+form.addEventListener("submit", async event => {
+  event.preventDefault();
+  setStatus("");
+  if (!form.reportValidity()) return;
+  if (document.getElementById("website").value) return;
+  const values = Object.fromEntries(new FormData(form).entries());
+  if (!validPhone(values.phone.trim())) {
+    setStatus("Revisá el teléfono ingresado.", true);
+    return;
+  }
+  if (!client) {
+    setStatus("Falta configurar la conexión con InsForge.", true);
+    return;
+  }
+  if (values.preferred_date < localToday()) {
+    setStatus("Elegí una fecha de hoy en adelante.", true);
+    return;
+  }
+  submit.disabled = true;
+  submit.textContent = "Verificando y reservando…";
+  try {
+    const { error } = await client.database.rpc("create_barber_appointment", {
+      p_customer_name: values.customer_name.trim(),
+      p_phone: values.phone.trim(),
+      p_service: values.service,
+      p_preferred_date: values.preferred_date,
+      p_preferred_time: values.preferred_time,
+      p_notes: values.notes.trim() || null
+    });
+    if (error) throw error;
+    form.reset();
+    dateInput.min = localToday();
+    resetTimeOptions("Solicitud guardada. La barbería debe confirmar el turno.");
+  } catch (error) {
+    console.error("Error al guardar la solicitud:", error);
+    const detail = [error?.message || error?.error || "Error desconocido", error?.code ? "Código: " + error.code : "", error?.details || "", error?.hint || ""].filter(Boolean).join(" — ");
+    if (/no disponible|ocupado|availability|duplicate|unique/i.test(detail)) {
+      setStatus("Ese horario acaba de ocuparse. Elegí otro horario disponible.", true);
+      await loadAvailableSlots();
+    } else {
+      setStatus("No se pudo guardar: " + detail, true);
+    }
+  } finally {
+    submit.disabled = false;
+    submit.textContent = "Enviar solicitud ↗";
+  }
+});
+resetTimeOptions("Elegí un servicio y una fecha para consultar horarios.");
 </script></body></html>
