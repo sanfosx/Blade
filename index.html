@@ -76,7 +76,7 @@ const readBooking = () => { try { return JSON.parse(sessionStorage.getItem(booki
 const saveBooking = booking => { activeBooking = booking; sessionStorage.setItem(bookingSessionKey, JSON.stringify(booking)); renderBookingState(); };
 const clearBooking = () => { activeBooking = null; sessionStorage.removeItem(bookingSessionKey); renderBookingState(); };
 function renderBookingState(){
-  const hasActive = !!activeBooking && activeBooking.status !== "cancelled";
+  const hasActive = !!activeBooking;
   form.style.display = hasActive ? "none" : "";
   bookingManagement.style.display = activeBooking ? "block" : "none";
   if(!activeBooking){ managementSummary.textContent = ""; return; }
@@ -292,7 +292,7 @@ async function loadManagementSlots(){
       const value=String(slot.slot||"").slice(0,5);
       if(value && !(date===activeBooking?.preferred_date && value===String(activeBooking?.preferred_time||"").slice(0,5))) manageTime.add(new Option(value,value));
     });
-    if(date===activeBooking?.preferred_date) manageTime.add(new Option(String(activeBooking.preferred_time).slice(0,5)+" (actual)",String(activeBooking.preferred_time).slice(0,5));
+    if(date===activeBooking?.preferred_date) manageTime.add(new Option(String(activeBooking.preferred_time).slice(0,5)+" (actual)",String(activeBooking.preferred_time).slice(0,5)));
     manageTime.disabled=false;
   }catch(error){managementStatus.textContent="No se pudo consultar disponibilidad. Intentá nuevamente.";}
 }
