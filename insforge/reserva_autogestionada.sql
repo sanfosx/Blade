@@ -165,3 +165,6 @@ grant execute on function public.cancel_managed_barber_appointment(uuid,text) to
 
 -- El token nunca se devuelve desde una consulta pública: solo se conoce en la sesión
 -- del navegador que creó la reserva. El hash queda almacenado en la tabla.
+
+-- Deshabilita el RPC antiguo para que el frontend no pueda saltarse el flujo de reserva única.
+revoke all on function public.create_barber_appointment(text,text,text,date,time,text) from public, anon, authenticated;
