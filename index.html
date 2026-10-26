@@ -19,6 +19,13 @@
 .booking-dialog-actions .secondary{background:transparent;color:var(--blue);border-color:var(--blue)}
 @media(max-width:480px){.booking-dialog-actions{display:grid;grid-template-columns:1fr}.booking-dialog-actions button{width:100%}}
 
+#turno[hidden]{display:none!important}
+#booking-management{display:none}
+#booking-management .management-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+#booking-management .danger{background:var(--ink)}
+#booking-management input,#booking-management select{min-height:48px;width:100%;padding:12px;border:2px solid var(--ink);font:inherit;background:#fffdf7}
+#booking-management label{display:block;margin:12px 0 6px}
+@media(max-width:520px){#booking-management .management-actions{display:grid}.management-actions button{width:100%}}
 .field-help{font-size:.76rem;color:var(--muted);margin:8px 0 0}
 #booking-form input,#booking-form select,#booking-form textarea{min-height:48px;max-width:100%;font-size:16px;touch-action:manipulation}
 #booking-form select:disabled{opacity:.72;cursor:wait;background:#e7decd}
@@ -33,7 +40,11 @@
 <section class="content prices" id="precios"><div class="wrap"><div class="section-head"><div><p class="eyebrow">La carta del caballero</p><h2>Servicios &<br>precios.</h2></div><p>Elegí tu servicio y preparate para salir impecable. Los valores de esta demo deben confirmarse antes de publicar.</p></div><div class="menu-card"><div class="menu-title"><h3>Gentleman's Menu</h3><p>GOOD GROOMING · FAIR PRICES</p></div><div class="rowprice"><div><h3>Corte clásico</h3><p>Corte personalizado + terminación</p></div><div class="price">$ 12.000</div></div><div class="rowprice"><div><h3>Corte & barba</h3><p>Combo completo</p></div><div class="price">$ 18.000</div></div><div class="rowprice"><div><h3>Afeitada tradicional</h3><p>Toalla caliente y navaja clásica</p></div><div class="price">$ 9.000</div></div><div class="rowprice"><div><h3>Perfilado de barba</h3><p>Diseño, contornos y acabado</p></div><div class="price">$ 7.000</div></div><div class="rowprice"><div><h3>Corte junior</h3><p>Para los caballeros en formación</p></div><div class="price">$ 9.000</div></div><p class="disclaimer">PRECIOS ILUSTRATIVOS · CONFIRMAR VALORES ANTES DE PUBLICAR</p></div></div></section>
 <section class="content barbers" id="barberos"><div class="wrap"><div class="section-head"><div><p class="eyebrow">Los que dominan el oficio</p><h2>Conocé a los<br>barberos.</h2></div><p>Experiencia, pulso firme y respeto por el oficio. Cada barbero tiene su estilo; todos comparten el mismo estándar.</p></div><div class="cards"><article class="barber"><div class="portrait"><img loading="lazy" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=700&q=85" alt="Retrato ilustrativo de barbero Mateo"></div><div class="bio"><small>Especialista en tijera</small><h3>Mateo Brooks</h3><p>Clásicos atemporales y precisión en cada detalle.</p></div></article><article class="barber"><div class="portrait"><img loading="lazy" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=700&q=85" alt="Retrato ilustrativo de barbero James"></div><div class="bio"><small>Maestro de la navaja</small><h3>James Carter</h3><p>Afeitadas tradicionales y contornos impecables.</p></div></article><article class="barber"><div class="portrait"><img loading="lazy" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=700&q=85" alt="Retrato ilustrativo de barbero Oliver"></div><div class="bio"><small>Experto en barba</small><h3>Oliver Hayes</h3><p>Diseño de barba con carácter y proporción.</p></div></article></div></div></section>
 <section class="content visit" id="visitanos"><div class="wrap visit-grid"><div><p class="eyebrow">Tu silla te está esperando</p><h2>Entrá como sos.<br>Salí impecable.</h2><p>Pasá por la barbería, tomá asiento y dejá el resto en nuestras manos. Estamos para recuperar el placer de hacer las cosas bien.</p><a class="btn" href="#turno">Quiero un turno ↗</a></div><div class="visit-box"><h3>Horarios de atención</h3><div id="public-hours"><div class="hours"><span>Consultando horarios…</span><strong>—</strong></div></div><p style="font-size:.75rem;color:#655e52;margin-top:18px">Dirección y horarios de ejemplo: reemplazar por los datos reales del local.</p></div></div></section>
-<section class="content" id="turno" style="background:var(--paper)"><div class="wrap" style="max-width:760px"><div style="text-align:center"><p class="eyebrow">La buena pinta empieza acá</p><h2>Reservá tu silla.</h2><p>Completá tus datos y enviaremos tu solicitud. El turno queda pendiente de confirmación por la barbería.</p></div><form id="booking-form" class="menu-card" style="margin-top:28px" novalidate><div class="rowprice" style="display:block"><label for="booking-name">Nombre y apellido *</label><input id="booking-name" name="customer_name" required maxlength="100" autocomplete="name" style="display:block;width:100%;padding:12px;border:2px solid var(--ink);font:inherit;background:#fffdf7"></div><div class="rowprice" style="display:block"><label for="booking-phone">Teléfono o WhatsApp *</label><input id="booking-phone" name="phone" required maxlength="30" autocomplete="tel" inputmode="tel" style="display:block;width:100%;padding:12px;border:2px solid var(--ink);font:inherit;background:#fffdf7"></div><div class="rowprice" style="display:block"><label for="booking-service">Servicio *</label><select id="booking-service" name="service" required style="display:block;width:100%;padding:12px;border:2px solid var(--ink);font:inherit;background:#fffdf7"><option value="">Seleccionar servicio</option></select></div><div class="rowprice" style="display:block"><label for="booking-date">Fecha preferida *</label><input id="booking-date" name="preferred_date" type="date" required style="display:block;width:100%;padding:12px;border:2px solid var(--ink);font:inherit;background:#fffdf7"></div><div class="rowprice" style="display:block"><label for="booking-time">Horario preferido *</label><select id="booking-time" name="preferred_time" required disabled aria-describedby="booking-time-help" style="display:block;width:100%;padding:12px;border:2px solid var(--ink);font:inherit;background:#fffdf7"><option value="">Primero elegí un servicio y una fecha</option></select><p id="booking-time-help" class="field-help">Los horarios se consultan según la agenda del local y la duración del servicio.</p></div><div class="rowprice" style="display:block"><label for="booking-notes">Observaciones (opcional)</label><textarea id="booking-notes" name="notes" maxlength="500" rows="3" style="display:block;width:100%;padding:12px;border:2px solid var(--ink);font:inherit;background:#fffdf7"></textarea></div><div style="position:absolute;left:-9999px" aria-hidden="true"><label for="website">Dejar vacío</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div><button class="btn" type="submit" id="booking-submit">Enviar solicitud ↗</button><p id="booking-status" role="status" aria-live="polite" style="font-size:.85rem;margin-top:18px"></p><p style="font-size:.72rem;color:var(--muted)">Enviar una solicitud no confirma automáticamente el turno. La barbería deberá confirmar disponibilidad.</p></form></div></section></main>
+<section class="content" id="turno" style="background:var(--paper)" hidden><div class="wrap" style="max-width:760px"><div style="text-align:center"><p class="eyebrow">La buena pinta empieza acá</p><h2>Reservá tu silla.</h2><p>Completá tus datos y enviaremos tu solicitud. El turno queda pendiente de confirmación por la barbería.</p></div><form id="booking-form" class="menu-card" style="margin-top:28px" novalidate><div class="rowprice" style="display:block"><label for="booking-name">Nombre y apellido *</label><input id="booking-name" name="customer_name" required maxlength="100" autocomplete="name" style="display:block;width:100%;padding:12px;border:2px solid var(--ink);font:inherit;background:#fffdf7"></div><div class="rowprice" style="display:block"><label for="booking-phone">Teléfono o WhatsApp *</label><input id="booking-phone" name="phone" required maxlength="30" autocomplete="tel" inputmode="tel" style="display:block;width:100%;padding:12px;border:2px solid var(--ink);font:inherit;background:#fffdf7"></div><div class="rowprice" style="display:block"><label for="booking-service">Servicio *</label><select id="booking-service" name="service" required style="display:block;width:100%;padding:12px;border:2px solid var(--ink);font:inherit;background:#fffdf7"><option value="">Seleccionar servicio</option></select></div><div class="rowprice" style="display:block"><label for="booking-date">Fecha preferida *</label><input id="booking-date" name="preferred_date" type="date" required style="display:block;width:100%;padding:12px;border:2px solid var(--ink);font:inherit;background:#fffdf7"></div><div class="rowprice" style="display:block"><label for="booking-time">Horario preferido *</label><select id="booking-time" name="preferred_time" required disabled aria-describedby="booking-time-help" style="display:block;width:100%;padding:12px;border:2px solid var(--ink);font:inherit;background:#fffdf7"><option value="">Primero elegí un servicio y una fecha</option></select><p id="booking-time-help" class="field-help">Los horarios se consultan según la agenda del local y la duración del servicio.</p></div><div class="rowprice" style="display:block"><label for="booking-notes">Observaciones (opcional)</label><textarea id="booking-notes" name="notes" maxlength="500" rows="3" style="display:block;width:100%;padding:12px;border:2px solid var(--ink);font:inherit;background:#fffdf7"></textarea></div><div style="position:absolute;left:-9999px" aria-hidden="true"><label for="website">Dejar vacío</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div><button class="btn" type="submit" id="booking-submit">Enviar solicitud ↗</button><p id="booking-status" role="status" aria-live="polite" style="font-size:.85rem;margin-top:18px"></p><p style="font-size:.72rem;color:var(--muted)">Enviar una solicitud no confirma automáticamente el turno. La barbería deberá confirmar disponibilidad.</p></form><div id="booking-management" class="menu-card" aria-live="polite" style="margin-top:28px">
+<h3>Tu reserva actual</h3><p id="management-status">La solicitud está registrada en esta sesión.</p><div id="management-summary" class="booking-summary"></div>
+<div id="management-editor"><label for="manage-service">Servicio</label><select id="manage-service"></select><label for="manage-date">Nueva fecha</label><input id="manage-date" type="date"><label for="manage-time">Nuevo horario</label><select id="manage-time" disabled><option value="">Elegí servicio y fecha</option></select></div>
+<div class="management-actions"><button class="btn" type="button" id="manage-save">Modificar esta reserva</button><button class="btn danger" type="button" id="manage-cancel">Cancelar esta reserva</button></div>
+<p class="field-help">Solo se puede administrar la reserva guardada en esta sesión. No se habilitan nuevas reservas mientras esta reserva siga activa.</p></div></div></section></main>
 <dialog id="booking-confirm-dialog" class="booking-dialog" aria-labelledby="booking-confirm-title" aria-describedby="booking-confirm-description">
 <div class="booking-dialog-head"><h3 id="booking-confirm-title">Revisá tu solicitud</h3></div>
 <div class="booking-dialog-body"><p id="booking-confirm-description">Confirmá que los datos del turno sean correctos. La solicitud quedará pendiente hasta que la barbería la confirme.</p><div id="booking-confirm-summary" class="booking-summary"></div><div class="booking-dialog-actions"><button type="button" id="booking-edit" class="secondary">Volver a editar</button><button type="button" id="booking-confirm-send">Enviar solicitud</button></div></div>
@@ -52,6 +63,45 @@ const serviceInput = document.getElementById("booking-service");
 const timeInput = document.getElementById("booking-time");
 const phoneInput = document.getElementById("booking-phone");
 const publicHours = document.getElementById("public-hours");
+const bookingSection = document.getElementById("turno");
+const bookingManagement = document.getElementById("booking-management");
+const managementStatus = document.getElementById("management-status");
+const managementSummary = document.getElementById("management-summary");
+const manageService = document.getElementById("manage-service");
+const manageDate = document.getElementById("manage-date");
+const manageTime = document.getElementById("manage-time");
+const bookingSessionKey = "gentlemansBlade.activeBooking.v1";
+let activeBooking = null;
+const readBooking = () => { try { return JSON.parse(sessionStorage.getItem(bookingSessionKey) || "null"); } catch { return null; } };
+const saveBooking = booking => { activeBooking = booking; sessionStorage.setItem(bookingSessionKey, JSON.stringify(booking)); renderBookingState(); };
+const clearBooking = () => { activeBooking = null; sessionStorage.removeItem(bookingSessionKey); renderBookingState(); };
+function renderBookingState(){
+  const hasActive = !!activeBooking && activeBooking.status !== "cancelled";
+  form.style.display = hasActive ? "none" : "";
+  bookingManagement.style.display = activeBooking ? "block" : "none";
+  if(!activeBooking){ managementSummary.textContent = ""; return; }
+  managementSummary.textContent = "Estado: " + (activeBooking.status === "cancelled" ? "Cancelada" : activeBooking.status === "confirmed" ? "Confirmada" : "Pendiente de confirmación") +
+    "\\nNombre: " + activeBooking.customer_name + "\\nTeléfono: " + activeBooking.phone +
+    "\\nServicio: " + activeBooking.service + "\\nFecha: " + activeBooking.preferred_date +
+    "\\nHorario: " + String(activeBooking.preferred_time).slice(0,5) +
+    (activeBooking.notes ? "\\nObservaciones: " + activeBooking.notes : "");
+  const cancelled = activeBooking.status === "cancelled";
+  document.getElementById("management-editor").style.display = cancelled ? "none" : "";
+  document.getElementById("manage-save").style.display = cancelled ? "none" : "";
+  document.getElementById("manage-cancel").style.display = cancelled ? "none" : "";
+  managementStatus.textContent = cancelled ? "La reserva fue cancelada. Para reservar nuevamente, iniciá una nueva sesión del navegador." : "Esta es tu única reserva activa en esta sesión.";
+  manageService.value = activeBooking.service || "";
+  manageDate.value = activeBooking.preferred_date || "";
+  if(cancelled) bookingManagement.querySelector(".field-help").textContent = "La reserva está cancelada. Podés cerrar esta sesión; no se permite otra reserva en esta sesión.";
+}
+function openBooking(event){
+  if(event){event.preventDefault();}
+  bookingSection.hidden = false;
+  bookingSection.scrollIntoView({behavior:"smooth",block:"start"});
+  if(activeBooking) renderBookingState();
+}
+document.querySelectorAll('a[href="#turno"]').forEach(link=>link.addEventListener("click",openBooking));
+
 const dayNames = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
 const client = config.url && config.anonKey
   ? createClient({ baseUrl: config.url, anonKey: config.anonKey })
@@ -81,6 +131,10 @@ async function loadPublicSettings(){
       client.database.rpc("get_public_barber_business_hours")
     ]);
     if(!servicesResult.error&&Array.isArray(servicesResult.data)){
+      manageService.replaceChildren(new Option("Seleccionar servicio",""));
+      servicesResult.data.forEach(service=>{const name=String(service.service_name||"");if(name)manageService.add(new Option(name+" ("+Number(service.duration_minutes)+" min)",name));});
+      if(activeBooking) manageService.value=activeBooking.service;
+
       const selected=serviceInput.value;
       serviceInput.replaceChildren(new Option("Seleccionar servicio",""));
       servicesResult.data.forEach(service=>{
@@ -188,19 +242,28 @@ form.addEventListener("submit", async event => {
   submit.disabled = true;
   submit.textContent = "Verificando y reservando…";
   try {
-    const { error } = await client.database.rpc("create_barber_appointment", {
+    const managementToken = crypto.randomUUID();
+    const { data, error } = await client.database.rpc("create_managed_barber_appointment", {
       p_customer_name: values.customer_name.trim(),
       p_phone: values.phone.trim(),
       p_service: values.service,
       p_preferred_date: values.preferred_date,
       p_preferred_time: values.preferred_time,
-      p_notes: values.notes.trim() || null
+      p_notes: values.notes.trim() || null,
+      p_management_token: managementToken
     });
     if (error) throw error;
+    const reservationId = typeof data === "string" ? data : data?.id;
+    if (!reservationId) throw new Error("La reserva se guardó, pero no se recibió su identificador. Contactá a la barbería antes de intentar otra reserva.");
+    saveBooking({id:reservationId, token:managementToken, customer_name:values.customer_name.trim(), phone:values.phone.trim(), service:values.service, preferred_date:values.preferred_date, preferred_time:values.preferred_time, notes:values.notes.trim(), status:"pending"});
     form.reset();
     bookingConfirmed=false;
     dateInput.min = localToday();
-    resetTimeOptions("Solicitud guardada. La barbería debe confirmar el turno.");
+    resetTimeOptions("");
+    renderBookingState();
+    setStatus("Reserva registrada. Guardamos sus datos en esta sesión; podés modificarla o cancelarla desde aquí.");
+    managementStatus.textContent = "Reserva registrada correctamente. Está pendiente de confirmación por la barbería.";
+    bookingManagement.scrollIntoView({behavior:"smooth",block:"center"});
   } catch (error) {
     bookingConfirmed=false;
     console.error("Error al guardar la solicitud:", error);
@@ -216,6 +279,51 @@ form.addEventListener("submit", async event => {
     submit.textContent = "Enviar solicitud ↗";
   }
 });
+manageDate.min = localToday();
+async function loadManagementSlots(){
+  const date=manageDate.value, service=manageService.value;
+  manageTime.replaceChildren(new Option("Consultando disponibilidad…","")); manageTime.disabled=true;
+  if(!client||!date||!service){manageTime.replaceChildren(new Option("Elegí servicio y fecha",""));return;}
+  try{
+    const {data,error}=await client.database.rpc("get_available_barber_slots",{p_preferred_date:date,p_service:service});
+    if(error)throw error;
+    manageTime.replaceChildren(new Option("Seleccionar horario",""));
+    (Array.isArray(data)?data:[]).forEach(slot=>{
+      const value=String(slot.slot||"").slice(0,5);
+      if(value && !(date===activeBooking?.preferred_date && value===String(activeBooking?.preferred_time||"").slice(0,5))) manageTime.add(new Option(value,value));
+    });
+    if(date===activeBooking?.preferred_date) manageTime.add(new Option(String(activeBooking.preferred_time).slice(0,5)+" (actual)",String(activeBooking.preferred_time).slice(0,5));
+    manageTime.disabled=false;
+  }catch(error){managementStatus.textContent="No se pudo consultar disponibilidad. Intentá nuevamente.";}
+}
+manageDate.addEventListener("change",loadManagementSlots);
+manageService.addEventListener("change",loadManagementSlots);
+document.getElementById("manage-save").addEventListener("click",async()=>{
+  if(!activeBooking||activeBooking.status==="cancelled")return;
+  if(!manageDate.value||!manageTime.value||!manageService.value){managementStatus.textContent="Seleccioná servicio, fecha y horario.";return;}
+  if(!confirm("¿Modificar la misma reserva con el servicio, fecha y horario seleccionados?"))return;
+  const button=document.getElementById("manage-save");button.disabled=true;
+  try{
+    const {error}=await client.database.rpc("update_managed_barber_appointment",{p_appointment_id:activeBooking.id,p_management_token:activeBooking.token,p_service:manageService.value,p_preferred_date:manageDate.value,p_preferred_time:manageTime.value});
+    if(error)throw error;
+    activeBooking.service=manageService.value;activeBooking.preferred_date=manageDate.value;activeBooking.preferred_time=manageTime.value;
+    saveBooking(activeBooking);managementStatus.textContent="La misma reserva fue modificada. La barbería debe confirmar los cambios.";
+  }catch(error){managementStatus.textContent="No se pudo modificar la reserva: "+(error?.message||"verificá la disponibilidad.");}
+  finally{button.disabled=false;}
+});
+document.getElementById("manage-cancel").addEventListener("click",async()=>{
+  if(!activeBooking||activeBooking.status==="cancelled")return;
+  if(!confirm("¿Cancelar esta reserva? Esta acción no se puede deshacer desde la web."))return;
+  const button=document.getElementById("manage-cancel");button.disabled=true;
+  try{
+    const {error}=await client.database.rpc("cancel_managed_barber_appointment",{p_appointment_id:activeBooking.id,p_management_token:activeBooking.token});
+    if(error)throw error;
+    activeBooking.status="cancelled";saveBooking(activeBooking);managementStatus.textContent="Reserva cancelada correctamente.";
+  }catch(error){managementStatus.textContent="No se pudo cancelar la reserva: "+(error?.message||"intentá nuevamente.");}
+  finally{button.disabled=false;}
+});
+activeBooking=readBooking();
+if(activeBooking){bookingSection.hidden=false;renderBookingState();}
 resetTimeOptions("Elegí un servicio y una fecha para consultar horarios.");
 loadPublicSettings();
 </script></body></html>
