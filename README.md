@@ -76,6 +76,23 @@ La migración adicional `insforge/agenda_configurable.sql` permite administrar h
 **Validación recomendada después de aplicar el SQL:** cambiar temporalmente la apertura de un día y la duración de un servicio desde el panel; comprobar que el sitio público refleje esos cambios y que la selección de turnos respete el nuevo horario. Después restaurá los horarios definitivos del negocio.
 
 
+### Búsqueda de agenda y administración de servicios
+
+El panel incluye búsqueda por cliente, teléfono, servicio u observaciones, además de filtro por fecha y estado. En dispositivos móviles, los turnos se presentan en tarjetas con controles apilados.
+
+Para administrar el catálogo desde el panel:
+
+1. Ejecutá `insforge/servicios_crud.sql` una sola vez en el editor SQL de InsForge, después de `insforge/agenda_configurable.sql`. No uses `BEGIN` ni `COMMIT`.
+2. En `/admin.html`, la sección **Duración de servicios** permite modificar nombre, duración y estado activo de los servicios existentes.
+3. Usá **Agregar servicio** para crear servicios nuevos. La duración debe ser de 15 a 240 minutos, en múltiplos de 15.
+4. Guardá los cambios de los servicios existentes con **Guardar cambios de servicios**.
+5. Para retirar un servicio de las nuevas reservas, desmarcá **Activo**. No se borra físicamente para preservar el historial de turnos.
+
+La migración agrega permisos de inserción con RLS para administradores autorizados. No concede permisos de borrado ni acceso de escritura al público anónimo. El sitio público muestra solo servicios activos; las duraciones se usan para calcular la disponibilidad.
+
+**Importante:** cambiar el nombre de un servicio afecta el catálogo para futuras reservas; las reservas históricas conservan el nombre que tenían registrado. Probá alta, edición, desactivación y una reserva de prueba después de aplicar la migración.
+
+
 ### Reprogramar turnos desde el panel
 
 La migración `insforge/gestion_turnos.sql` agrega la función segura `admin_reschedule_barber_appointment`. Permite al administrador reprogramar turnos pendientes o confirmados, validando fecha, horario de atención, duración del servicio y conflictos con otros turnos.
