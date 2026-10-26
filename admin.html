@@ -211,7 +211,7 @@ $("appointments-body").addEventListener("click",async e=>{
     const time=$("appointments-body").querySelector('input[data-reschedule-time="'+id+'"]')?.value;
     if(!date||!time){message("dashboard-status","Seleccioná una nueva fecha y un horario.",true);return}
     if(date<localToday()){message("dashboard-status","La nueva fecha no puede estar en el pasado.",true);return}
-    if(!/^([01]\\d|2[0-3]):(00|30)$/.test(time)){message("dashboard-status","Elegí un horario en intervalos de 30 minutos.",true);return}
+    if(!/^([01]\d|2[0-3]):(00|30)$/.test(time)){message("dashboard-status","Elegí un horario en intervalos de 30 minutos.",true);return}
     if(!confirm("¿Reprogramar este turno para el "+date+" a las "+time+"?"))return;
     reschedule.disabled=true;message("dashboard-status","Validando disponibilidad y reprogramando…");
     try{
