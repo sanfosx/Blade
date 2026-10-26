@@ -72,9 +72,9 @@ const manageDate = document.getElementById("manage-date");
 const manageTime = document.getElementById("manage-time");
 const bookingSessionKey = "gentlemansBlade.activeBooking.v1";
 let activeBooking = null;
-const readBooking = () => { try { return JSON.parse(sessionStorage.getItem(bookingSessionKey) || "null"); } catch { return null; } };
-const saveBooking = booking => { activeBooking = booking; sessionStorage.setItem(bookingSessionKey, JSON.stringify(booking)); renderBookingState(); };
-const clearBooking = () => { activeBooking = null; sessionStorage.removeItem(bookingSessionKey); renderBookingState(); };
+const readBooking = () => { try { return JSON.parse(localStorage.getItem(bookingSessionKey) || "null"); } catch { return null; } };
+const saveBooking = booking => { activeBooking = booking; localStorage.setItem(bookingSessionKey, JSON.stringify(booking)); renderBookingState(); };
+const clearBooking = () => { activeBooking = null; localStorage.removeItem(bookingSessionKey); renderBookingState(); };
 function renderBookingState(){
   const hasActive = !!activeBooking;
   form.style.display = hasActive ? "none" : "";
