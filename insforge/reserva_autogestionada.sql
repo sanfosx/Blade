@@ -6,6 +6,10 @@ create extension if not exists pgcrypto;
 alter table public.barber_appointments
   add column if not exists management_token_hash text;
 
+-- La tabla original limitaba los servicios a cinco nombres fijos; el catálogo ahora es editable.
+alter table public.barber_appointments
+  drop constraint if exists barber_appointments_service_check;
+
 create or replace function public.create_managed_barber_appointment(
   p_customer_name text,
   p_phone text,
