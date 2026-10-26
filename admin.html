@@ -99,6 +99,7 @@ function message(id,text,error=false){const el=$(id);el.textContent=text;el.clas
 function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function localDate(value){return String(value||"").slice(0,10)}
 function localToday(){const now=new Date();const year=now.getFullYear();const month=String(now.getMonth()+1).padStart(2,"0");const day=String(now.getDate()).padStart(2,"0");return year+"-"+month+"-"+day}
+function isValidHalfHourTime(value){const parts=String(value||"").split(":");if(parts.length<2||parts.length>3)return false;const hourText=parts[0],minuteText=parts[1],secondText=parts.length===3?parts[2]:"0";const hour=Number(hourText),minute=Number(minuteText),second=Number(secondText);return hourText.length===2&&minuteText.length===2&&Number.isInteger(hour)&&hour>=0&&hour<=23&&Number.isInteger(minute)&&(minute===0||minute===30)&&Number.isFinite(second)&&second===0}
 function labelStatus(value){return ({pending:"Pendiente",confirmed:"Confirmado",cancelled:"Cancelado"})[value]||value}
 function whatsappPhone(value){
   let digits=String(value||"").replace(/\D/g,"");
@@ -211,7 +212,7 @@ $("appointments-body").addEventListener("click",async e=>{
     const time=$("appointments-body").querySelector('input[data-reschedule-time="'+id+'"]')?.value;
     if(!date||!time){message("dashboard-status","Seleccioná una nueva fecha y un horario.",true);return}
     if(date<localToday()){message("dashboard-status","La nueva fecha no puede estar en el pasado.",true);return}
-    if(!/^([01]\d|2[0-3]):(00|30)$/.test(time)){message("dashboard-status","Elegí un horario en intervalos de 30 minutos.",true);return}
+    if(!isValidHalfHourTime(time)){message("dashboard-status","El horario recibido («"+time+"») no es válido. Elegí una hora en intervalos de 30 minutos, por ejemplo 09:00 o 09:30.",true);return}
     if(!confirm("¿Reprogramar este turno para el "+date+" a las "+time+"?"))return;
     reschedule.disabled=true;message("dashboard-status","Validando disponibilidad y reprogramando…");
     try{
