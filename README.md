@@ -104,3 +104,10 @@ La migración `insforge/gestion_turnos.sql` agrega la función segura `admin_res
 4. Después de confirmar el cambio, avisale al cliente por WhatsApp; el sistema no envía mensajes automáticamente.
 
 La función verifica que el usuario autenticado sea administrador. El panel usa RPC para reprogramar y no necesita conceder permisos directos de actualización sobre las fechas de las reservas.
+
+
+### Reserva única por sesión y autogestión del cliente
+
+La sección de reserva permanece oculta al entrar a la página y se abre desde los botones o enlaces de acción. Tras crear una reserva, se muestra su resumen y se bloquea la creación de otra reserva en esa pestaña/sesión del navegador; el cliente solo puede modificar el servicio, fecha y horario de esa reserva o cancelarla. La reserva se conserva en `sessionStorage` durante la sesión de esa pestaña. Si el cliente cambia de dispositivo, navegador o pierde los datos de sesión, deberá contactar a la barbería para gestionar el turno.
+
+**Activación obligatoria en InsForge:** ejecutar `insforge/reserva_autogestionada.sql` una sola vez después de `agenda_configurable.sql`. La migración agrega un token de gestión aleatorio cuya huella se guarda en la base, habilita RPC limitados para modificar/cancelar la reserva y revoca el RPC de creación anterior. El token es una credencial de acceso a esa reserva: no debe compartirse. No se probó esta migración contra el backend en vivo; después de aplicarla, probar alta, recarga de página, reprogramación, cancelación y rechazo de una segunda reserva.
