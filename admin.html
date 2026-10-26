@@ -61,6 +61,19 @@ td small{display:block;color:var(--muted);margin-top:4px;font-size:.78rem;overfl
 td .actions{align-items:stretch;flex-wrap:nowrap}td .actions select{min-width:130px;padding:8px;font-size:.8rem}td .actions button{padding:8px 10px;font-size:.75rem}
 .wa-link{display:inline-flex;align-items:center;justify-content:center;padding:8px 10px;border:2px solid #183d2b;background:#286447;color:#fff;text-decoration:none;font:800 .75rem 'Roboto Slab',serif;white-space:nowrap}
 .wa-link:hover{background:#1e5038}.phone-help{font-size:.7rem;color:var(--red);max-width:100px}
+
+.dialog-card{width:min(480px,calc(100% - 28px));padding:0;border:3px solid var(--ink);background:var(--paper);color:var(--ink);box-shadow:9px 9px 0 rgba(184,50,53,.8);max-height:min(85vh,720px)}
+.dialog-card::backdrop{background:rgba(16,42,69,.72)}
+.dialog-head{background:var(--blue);color:var(--paper);padding:17px 20px;border-bottom:4px solid var(--red)}
+.dialog-head h2{font:900 1.15rem 'Roboto Slab',serif;text-transform:uppercase;margin:0}
+.dialog-body{padding:20px}
+.dialog-body p{margin:0 0 12px;overflow-wrap:anywhere}
+.dialog-summary{background:#f4ead7;border:1px dashed #b8aa93;padding:12px;margin:12px 0;font-size:.88rem;white-space:pre-line}
+.dialog-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:18px}
+.dialog-actions .secondary{background:transparent;color:var(--blue);border-color:var(--blue)}
+.dialog-actions .danger{background:var(--red)}
+@media(max-width:480px){.dialog-actions{display:grid;grid-template-columns:1fr}.dialog-actions button{width:100%}}
+
 .hidden{display:none!important}.foot{margin:20px 0 0;padding-top:14px;border-top:1px solid var(--line);font-size:.77rem;color:var(--muted)}
 @media(max-width:700px){.wrap{width:min(100% - 24px,1180px)}.head{align-items:flex-start}.brand{font-size:.9rem}.back{font-size:.82rem;white-space:nowrap}main{padding-top:25px}.panel{box-shadow:5px 5px 0 rgba(23,59,97,.16)}.toolbar{align-items:stretch;padding:13px}.toolbar>.actions{display:grid;grid-template-columns:1fr 1fr}.toolbar>.actions button{width:100%;font-size:.78rem;padding:10px 8px}.filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.filters button{font-size:.74rem;padding:10px 6px}}
 @media(max-width:420px){.head{flex-direction:column;gap:10px}h1{font-size:1.8rem}.login{padding:22px 18px}}
@@ -86,6 +99,10 @@ td .actions{align-items:stretch;flex-wrap:nowrap}td .actions select{min-width:13
 </div>
 </section>
 <div class="filters" aria-label="Filtrar reservas"><button data-filter="all" aria-pressed="true">Todos</button><button data-filter="pending" aria-pressed="false">Pendientes</button><button data-filter="confirmed" aria-pressed="false">Confirmados</button><button data-filter="cancelled" aria-pressed="false">Cancelados</button></div><p id="dashboard-status" class="notice" role="status" aria-live="polite"></p><div class="tablewrap"><table><thead><tr><th>Fecha / hora</th><th>Cliente</th><th>Servicio</th><th>Observaciones</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="appointments-body"><tr><td colspan="6" class="empty">Cargando agenda…</td></tr></tbody></table></div><p class="foot">La agenda muestra los turnos registrados en InsForge. Verificá la identidad del cliente antes de confirmar cambios por canales externos.</p></div></section>
+<dialog id="action-dialog" class="dialog-card" aria-labelledby="action-dialog-title" aria-describedby="action-dialog-message">
+<div class="dialog-head"><h2 id="action-dialog-title">Confirmar acción</h2></div>
+<div class="dialog-body"><p id="action-dialog-message"></p><div id="action-dialog-summary" class="dialog-summary hidden"></div><div class="dialog-actions"><button type="button" id="action-dialog-cancel" class="secondary">Volver</button><button type="button" id="action-dialog-confirm" autofocus>Confirmar</button></div></div>
+</dialog>
 </main>
 <script src="./insforge-config.js"></script>
 <script type="module">
@@ -96,6 +113,17 @@ const $=id=>document.getElementById(id);
 const loginPanel=$("login-panel"), dashboard=$("dashboard");
 let appointments=[], filter="all", businessHours=[], barberServices=[];
 function message(id,text,error=false){const el=$(id);el.textContent=text;el.classList.toggle("error",error)}
+function confirmAction({title="Confirmar acción",message="¿Querés continuar?",summary="",confirmLabel="Confirmar",danger=false}={}){
+  const dialog=$("action-dialog"),titleEl=$("action-dialog-title"),messageEl=$("action-dialog-message"),summaryEl=$("action-dialog-summary"),confirmBtn=$("action-dialog-confirm"),cancelBtn=$("action-dialog-cancel");
+  titleEl.textContent=title;messageEl.textContent=message;summaryEl.textContent=summary;summaryEl.classList.toggle("hidden",!summary);confirmBtn.textContent=confirmLabel;confirmBtn.classList.toggle("danger",danger);
+  return new Promise(resolve=>{
+    let settled=false;
+    const finish=value=>{if(settled)return;settled=true;dialog.close();confirmBtn.removeEventListener("click",onConfirm);cancelBtn.removeEventListener("click",onCancel);dialog.removeEventListener("cancel",onEscape);resolve(value)};
+    const onConfirm=()=>finish(true),onCancel=()=>finish(false),onEscape=()=>finish(false);
+    confirmBtn.addEventListener("click",onConfirm);cancelBtn.addEventListener("click",onCancel);dialog.addEventListener("cancel",onEscape);
+    dialog.showModal();cancelBtn.focus();
+  });
+}
 function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function localDate(value){return String(value||"").slice(0,10)}
 function localToday(){const now=new Date();const year=now.getFullYear();const month=String(now.getMonth()+1).padStart(2,"0");const day=String(now.getDate()).padStart(2,"0");return year+"-"+month+"-"+day}
@@ -146,7 +174,7 @@ $("hours-body").addEventListener("change",e=>{
   ['opens','closes'].forEach(kind=>{const field=$("hours-body").querySelector('input[data-'+kind+'="'+day+'"]');if(field)field.disabled=!check.checked});
 });
 $("save-hours").addEventListener("click",async()=>{
-  const button=$("save-hours");button.disabled=true;message("hours-status","Guardando horarios…");
+  const proceed=await confirmAction({title:"Guardar horarios",message:"Los cambios afectan los horarios que verán los clientes al reservar.",summary:"Se actualizarán los días abiertos, las horas de apertura y las horas de cierre.",confirmLabel:"Guardar horarios"});if(!proceed)return;const button=$("save-hours");button.disabled=true;message("hours-status","Guardando horarios…");
   try{
     for(const h of businessHours){
       const day=String(h.iso_weekday);
@@ -163,7 +191,7 @@ $("save-hours").addEventListener("click",async()=>{
   finally{button.disabled=false}
 });
 $("save-services").addEventListener("click",async()=>{
-  const button=$("save-services");button.disabled=true;message("services-status","Guardando servicios…");
+  const proceed=await confirmAction({title:"Guardar servicios",message:"Los cambios afectan la duración y disponibilidad de los turnos.",summary:"Se actualizarán las duraciones y el estado activo de los servicios editados.",confirmLabel:"Guardar servicios"});if(!proceed)return;const button=$("save-services");button.disabled=true;message("services-status","Guardando servicios…");
   try{
     for(let i=0;i<barberServices.length;i++){
       const duration=Number($("services-body").querySelector('input[data-duration="'+i+'"]').value);
@@ -213,7 +241,7 @@ $("appointments-body").addEventListener("click",async e=>{
     if(!date||!time){message("dashboard-status","Seleccioná una nueva fecha y un horario.",true);return}
     if(date<localToday()){message("dashboard-status","La nueva fecha no puede estar en el pasado.",true);return}
     if(!isValidHalfHourTime(time)){message("dashboard-status","El horario recibido («"+time+"») no es válido. Elegí una hora en intervalos de 30 minutos, por ejemplo 09:00 o 09:30.",true);return}
-    if(!confirm("¿Reprogramar este turno para el "+date+" a las "+time+"?"))return;
+    const current=appointments.find(a=>a.id===id);const proceed=await confirmAction({title:"Reprogramar turno",message:"Se cambiará la fecha y el horario de esta reserva.",summary:(current?.customer_name||"Cliente")+"\n"+(current?.service||"Servicio")+"\nNuevo turno: "+date+" a las "+time,confirmLabel:"Reprogramar"});if(!proceed)return;
     reschedule.disabled=true;message("dashboard-status","Validando disponibilidad y reprogramando…");
     try{
       const {error}=await client.database.rpc("admin_reschedule_barber_appointment",{p_appointment_id:id,p_preferred_date:date,p_preferred_time:time});
@@ -226,7 +254,7 @@ $("appointments-body").addEventListener("click",async e=>{
   }
   const btn=e.target.closest("button[data-save]");if(!btn)return;
   const id=btn.dataset.save;const select=$("appointments-body").querySelector('select[data-status-for="'+CSS.escape(id)+'"]');if(!select)return;
-  const status=select.value;btn.disabled=true;btn.textContent="Guardando…";
+  const status=select.value;const current=appointments.find(a=>a.id===id);if(current&&current.status!==status){const proceed=await confirmAction({title:status==="cancelled"?"Cancelar turno":"Cambiar estado del turno",message:status==="cancelled"?"Esta acción marcará el turno como cancelado. ¿Querés continuar?":"Se actualizará el estado de la reserva.",summary:(current.customer_name||"Cliente")+"\n"+(current.service||"Servicio")+"\n"+localDate(current.preferred_date)+" · "+String(current.preferred_time||"").slice(0,5)+"\n"+labelStatus(current.status)+" → "+labelStatus(status),confirmLabel:status==="cancelled"?"Cancelar turno":"Guardar cambio",danger:status==="cancelled"});if(!proceed)return}btn.disabled=true;btn.textContent="Guardando…";
   try{
     const {error}=await client.database.from("barber_appointments").update({status}).eq("id",id);
     if(error)throw error;
@@ -239,6 +267,6 @@ document.querySelectorAll("[data-filter]").forEach(btn=>btn.addEventListener("cl
   filter=btn.dataset.filter;document.querySelectorAll("[data-filter]").forEach(b=>b.setAttribute("aria-pressed",String(b===btn)));render()
 }));
 $("refresh").addEventListener("click",loadAppointments);
-$("logout").addEventListener("click",async()=>{await client.auth.signOut();appointments=[];dashboard.classList.add("hidden");loginPanel.classList.remove("hidden");$("password").value="";message("login-status","Sesión cerrada.")});
+$("logout").addEventListener("click",async()=>{const proceed=await confirmAction({title:"Cerrar sesión",message:"Vas a salir del panel de administración.",confirmLabel:"Cerrar sesión"});if(!proceed)return;await client.auth.signOut();appointments=[];dashboard.classList.add("hidden");loginPanel.classList.remove("hidden");$("password").value="";message("login-status","Sesión cerrada.")});
 showSession();
 </script></body></html>
