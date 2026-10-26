@@ -56,7 +56,7 @@ td small{display:block;color:var(--muted);margin-top:4px;font-size:.78rem;overfl
 .config-table{min-width:0;font-family:inherit}.config-table th{font-size:.66rem;padding:9px 7px}.config-table td{padding:8px 7px;font-size:.78rem}
 .config-table input[type=time],.config-table input[type=number]{padding:8px 6px;font-size:.8rem;min-width:0}
 .config-table input[type=checkbox]{width:18px;height:18px;accent-color:var(--red)}
-.config-save{margin-top:13px;background:var(--blue)}.config-hint{font-size:.75rem;color:var(--muted);margin:8px 0}.reschedule{display:grid;grid-template-columns:1fr 1fr;gap:6px;min-width:220px;margin-top:8px}.reschedule input{min-width:0;padding:7px;font-size:.75rem}.reschedule button{grid-column:1/-1;background:var(--blue);padding:8px}.actions{flex-wrap:wrap}
+.config-save{margin-top:13px;background:var(--blue)}.config-hint{font-size:.75rem;color:var(--muted);margin:8px 0}.service-add-form{margin-top:18px;padding:14px;border:1px dashed var(--line);background:var(--paper)}.service-add-form h3{margin:0 0 8px;font-size:.95rem}.service-add-form label{margin-top:10px}.service-add-form input{min-height:42px;font-size:16px}.service-add-form button{width:100%}.service-name-input{min-width:150px;padding:8px 6px;font-size:.78rem}.agenda-tools{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(180px,1fr);gap:10px;margin:15px 0}.agenda-tools input{min-height:44px;font-size:16px}.agenda-tools label{margin:0 0 5px;font-size:.76rem}@media(max-width:520px){.agenda-tools{grid-template-columns:1fr}}.reschedule{display:grid;grid-template-columns:1fr 1fr;gap:6px;min-width:220px;margin-top:8px}.reschedule input{min-width:0;padding:7px;font-size:.75rem}.reschedule button{grid-column:1/-1;background:var(--blue);padding:8px}.actions{flex-wrap:wrap}
 @media(max-width:850px){.config-grid{grid-template-columns:1fr}.config-card{padding:13px}.config-table th,.config-table td{padding:7px 5px}}
 td .actions{align-items:stretch;flex-wrap:nowrap}td .actions select{min-width:130px;padding:8px;font-size:.8rem}td .actions button{padding:8px 10px;font-size:.75rem}
 .wa-link{display:inline-flex;align-items:center;justify-content:center;padding:8px 10px;border:2px solid #183d2b;background:#286447;color:#fff;text-decoration:none;font:800 .75rem 'Roboto Slab',serif;white-space:nowrap}
@@ -95,11 +95,17 @@ td .actions{align-items:stretch;flex-wrap:nowrap}td .actions select{min-width:13
 <div class="config-card">
 <h2>Duración de servicios</h2>
 <p>La duración se utiliza para calcular los espacios disponibles y evitar superposiciones. Valores en múltiplos de 15 minutos.</p>
-<div class="tablewrap"><table class="config-table"><thead><tr><th>Servicio</th><th>Minutos</th><th>Activo</th></tr></thead><tbody id="services-body"><tr><td colspan="3" class="empty">Cargando servicios…</td></tr></tbody></table></div>
-<button id="save-services" class="config-save" type="button">Guardar servicios</button><p id="services-status" class="notice" role="status" aria-live="polite"></p>
+<div class="tablewrap"><table class="config-table"><thead><tr><th>Nombre del servicio</th><th>Minutos</th><th>Activo</th></tr></thead><tbody id="services-body"><tr><td colspan="3" class="empty">Cargando servicios…</td></tr></tbody></table></div>
+<form id="add-service-form" class="service-add-form">
+  <h3>Agregar servicio</h3>
+  <label for="new-service-name">Nombre</label><input id="new-service-name" maxlength="80" required placeholder="Ej.: Corte + lavado">
+  <label for="new-service-duration">Duración (minutos)</label><input id="new-service-duration" type="number" min="15" max="240" step="15" value="30" required>
+  <button id="add-service-button" class="config-save" type="submit">Agregar servicio</button>
+</form>
+<button id="save-services" class="config-save" type="button">Guardar cambios de servicios</button><p class="config-hint">Para retirar un servicio del formulario público, desmarcá «Activo». Se conserva para el historial de turnos.</p><p id="services-status" class="notice" role="status" aria-live="polite"></p>
 </div>
 </section>
-<div class="filters" aria-label="Filtrar reservas"><button data-filter="all" aria-pressed="true">Todos</button><button data-filter="pending" aria-pressed="false">Pendientes</button><button data-filter="confirmed" aria-pressed="false">Confirmados</button><button data-filter="cancelled" aria-pressed="false">Cancelados</button></div><div class="status-legend" aria-label="Leyenda de estados"><span><i class="pending-dot"></i>Pendiente</span><span><i class="confirmed-dot"></i>Confirmado</span><span><i class="cancelled-dot"></i>Cancelado</span></div><p id="dashboard-status" class="notice" role="status" aria-live="polite"></p><div class="tablewrap"><table><thead><tr><th>Fecha / hora</th><th>Cliente</th><th>Servicio</th><th>Observaciones</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="appointments-body"><tr><td colspan="6" class="empty">Cargando agenda…</td></tr></tbody></table></div><p class="foot">La agenda muestra los turnos registrados en InsForge. Verificá la identidad del cliente antes de confirmar cambios por canales externos.</p></div></section>
+<div class="agenda-tools"><div><label for="appointment-search">Buscar cliente, teléfono o servicio</label><input id="appointment-search" type="search" placeholder="Nombre, teléfono o servicio…" autocomplete="off"></div><div><label for="appointment-date">Filtrar por fecha</label><input id="appointment-date" type="date"></div></div><div class="filters" aria-label="Filtrar reservas"><button data-filter="all" aria-pressed="true">Todos</button><button data-filter="pending" aria-pressed="false">Pendientes</button><button data-filter="confirmed" aria-pressed="false">Confirmados</button><button data-filter="cancelled" aria-pressed="false">Cancelados</button></div><div class="status-legend" aria-label="Leyenda de estados"><span><i class="pending-dot"></i>Pendiente</span><span><i class="confirmed-dot"></i>Confirmado</span><span><i class="cancelled-dot"></i>Cancelado</span></div><p id="dashboard-status" class="notice" role="status" aria-live="polite"></p><div class="tablewrap"><table><thead><tr><th>Fecha / hora</th><th>Cliente</th><th>Servicio</th><th>Observaciones</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="appointments-body"><tr><td colspan="6" class="empty">Cargando agenda…</td></tr></tbody></table></div><p class="foot">La agenda muestra los turnos registrados en InsForge. Verificá la identidad del cliente antes de confirmar cambios por canales externos.</p></div></section>
 <dialog id="action-dialog" class="dialog-card" aria-labelledby="action-dialog-title" aria-describedby="action-dialog-message">
 <div class="dialog-head"><h2 id="action-dialog-title">Confirmar acción</h2></div>
 <div class="dialog-body"><p id="action-dialog-message"></p><div id="action-dialog-summary" class="dialog-summary hidden"></div><div class="dialog-actions"><button type="button" id="action-dialog-cancel" class="secondary">Volver</button><button type="button" id="action-dialog-confirm" autofocus>Confirmar</button></div></div>
@@ -167,7 +173,7 @@ function renderHours(){
   $("hours-body").innerHTML=businessHours.length?businessHours.map(h=>'<tr data-day="'+h.iso_weekday+'"><td><strong>'+escapeHtml(h.day_name)+'</strong></td><td><input type="checkbox" data-open="'+h.iso_weekday+'" aria-label="Abrir '+escapeHtml(h.day_name)+'" '+(!h.is_closed?'checked':'')+'></td><td><input type="time" data-opens="'+h.iso_weekday+'" value="'+escapeHtml(String(h.opens_at||"09:00").slice(0,5))+'" '+(h.is_closed?'disabled':'')+' aria-label="Apertura '+escapeHtml(h.day_name)+'"></td><td><input type="time" data-closes="'+h.iso_weekday+'" value="'+escapeHtml(String(h.closes_at||"19:00").slice(0,5))+'" '+(h.is_closed?'disabled':'')+' aria-label="Cierre '+escapeHtml(h.day_name)+'"></td></tr>').join(""):'<tr><td colspan="4" class="empty">No hay horarios configurados.</td></tr>';
 }
 function renderServices(){
-  $("services-body").innerHTML=barberServices.length?barberServices.map((s,i)=>'<tr data-service-index="'+i+'"><td><strong>'+escapeHtml(s.service_name)+'</strong></td><td><input type="number" min="15" max="240" step="15" data-duration="'+i+'" value="'+Number(s.duration_minutes)+'" aria-label="Duración de '+escapeHtml(s.service_name)+'"></td><td><input type="checkbox" data-active="'+i+'" aria-label="Activar '+escapeHtml(s.service_name)+'" '+(s.is_active?'checked':'')+'></td></tr>').join(""):'<tr><td colspan="3" class="empty">No hay servicios configurados.</td></tr>';
+  $("services-body").innerHTML=barberServices.length?barberServices.map((s,i)=>'<tr data-service-index="'+i+'"><td><input class="service-name-input" type="text" maxlength="80" data-service-name="'+i+'" value="'+escapeHtml(s.service_name)+'" aria-label="Nombre del servicio '+escapeHtml(s.service_name)+'" required></td><td><input type="number" min="15" max="240" step="15" data-duration="'+i+'" value="'+Number(s.duration_minutes)+'" aria-label="Duración de '+escapeHtml(s.service_name)+'"></td><td><input type="checkbox" data-active="'+i+'" aria-label="Activar '+escapeHtml(s.service_name)+'" '+(s.is_active?'checked':'')+'></td></tr>').join(""):'<tr><td colspan="3" class="empty">No hay servicios configurados.</td></tr>';
 }
 $("hours-body").addEventListener("change",e=>{
   const check=e.target.closest("input[data-open]");if(!check)return;
@@ -191,14 +197,45 @@ $("save-hours").addEventListener("click",async()=>{
   }catch(err){message("hours-status",err?.message||"No se pudieron guardar los horarios.",true)}
   finally{button.disabled=false}
 });
+$("add-service-form").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const name=$("new-service-name").value.trim();
+  const duration=Number($("new-service-duration").value);
+  if(name.length<2){message("services-status","El nombre debe tener al menos 2 caracteres.",true);return}
+  if(!Number.isInteger(duration)||duration<15||duration>240||duration%15!==0){message("services-status","La duración debe ser de 15 a 240 minutos, en múltiplos de 15.",true);return}
+  if(barberServices.some(s=>s.service_name.toLocaleLowerCase()===name.toLocaleLowerCase())){message("services-status","Ya existe un servicio con ese nombre.",true);return}
+  const proceed=await confirmAction({title:"Agregar servicio",message:"El servicio se incorporará a la configuración de la barbería.",summary:name+"\nDuración: "+duration+" minutos\nQuedará activo para las reservas.",confirmLabel:"Agregar servicio"});
+  if(!proceed)return;
+  const button=$("add-service-button");button.disabled=true;message("services-status","Agregando servicio…");
+  try{
+    const {error}=await client.database.from("barber_services").insert({service_name:name,duration_minutes:duration,is_active:true,updated_at:new Date().toISOString()});
+    if(error)throw error;
+    $("new-service-name").value="";$("new-service-duration").value="30";
+    await loadSettings();message("services-status","Servicio agregado y activo.");
+  }catch(err){message("services-status",err?.message||"No se pudo agregar el servicio. Verificá que esté aplicada la migración servicios_crud.sql.",true)}
+  finally{button.disabled=false}
+});
 $("save-services").addEventListener("click",async()=>{
   const proceed=await confirmAction({title:"Guardar servicios",message:"Los cambios afectan la duración y disponibilidad de los turnos.",summary:"Se actualizarán las duraciones y el estado activo de los servicios editados.",confirmLabel:"Guardar servicios"});if(!proceed)return;const button=$("save-services");button.disabled=true;message("services-status","Guardando servicios…");
   try{
+    const editedNames=new Set();
     for(let i=0;i<barberServices.length;i++){
+      const oldName=barberServices[i].service_name;
+      const name=$("services-body").querySelector('input[data-service-name="'+i+'"]').value.trim();
       const duration=Number($("services-body").querySelector('input[data-duration="'+i+'"]').value);
       const active=$("services-body").querySelector('input[data-active="'+i+'"]').checked;
-      if(!Number.isInteger(duration)||duration<15||duration>240||duration%15!==0)throw new Error("La duración de "+barberServices[i].service_name+" debe ser de 15 a 240 minutos, en múltiplos de 15.");
-      const {error}=await client.database.from("barber_services").update({duration_minutes:duration,is_active:active,updated_at:new Date().toISOString()}).eq("service_name",barberServices[i].service_name);
+      if(name.length<2||name.length>80)throw new Error("El nombre de cada servicio debe tener entre 2 y 80 caracteres.");
+      const key=name.toLocaleLowerCase();
+      if(editedNames.has(key))throw new Error("Hay nombres de servicios duplicados: "+name+".");
+      editedNames.add(key);
+      if(!Number.isInteger(duration)||duration<15||duration>240||duration%15!==0)throw new Error("La duración de "+name+" debe ser de 15 a 240 minutos, en múltiplos de 15.");
+    }
+    for(let i=0;i<barberServices.length;i++){
+      const oldName=barberServices[i].service_name;
+      const name=$("services-body").querySelector('input[data-service-name="'+i+'"]').value.trim();
+      const duration=Number($("services-body").querySelector('input[data-duration="'+i+'"]').value);
+      const active=$("services-body").querySelector('input[data-active="'+i+'"]').checked;
+      const {error}=await client.database.from("barber_services").update({service_name:name,duration_minutes:duration,is_active:active,updated_at:new Date().toISOString()}).eq("service_name",oldName);
       if(error)throw error;
     }
     await loadSettings();message("services-status","Servicios guardados. Los cambios afectan el cálculo de disponibilidad.");
@@ -214,7 +251,9 @@ async function loadAppointments(){
   message("dashboard-status",appointments.length+" turnos cargados.");
 }
 function render(){
-  const rows=appointments.filter(a=>filter==="all"||a.status===filter);
+  const search=$("appointment-search").value.trim().toLocaleLowerCase();
+  const date=$("appointment-date").value;
+  const rows=appointments.filter(a=>(filter==="all"||a.status===filter)&&(!date||localDate(a.preferred_date)===date)&&(!search||[a.customer_name,a.phone,a.service,a.notes].some(v=>String(v||"").toLocaleLowerCase().includes(search))));
   $("appointments-body").innerHTML=rows.length?rows.map(a=>'<tr class="row-'+escapeHtml(["pending","confirmed","cancelled"].includes(a.status)?a.status:"pending")+'"><td data-label="Fecha y hora"><strong>'+escapeHtml(localDate(a.preferred_date))+'</strong><small>'+escapeHtml(String(a.preferred_time||"").slice(0,5))+'</small></td><td data-label="Cliente"><strong>'+escapeHtml(a.customer_name)+'</strong><small>'+escapeHtml(a.phone)+'</small></td><td data-label="Servicio">'+escapeHtml(a.service)+'</td><td data-label="Observaciones">'+escapeHtml(a.notes||"—")+'</td><td data-label="Estado"><span class="status status-'+escapeHtml(["pending","confirmed","cancelled"].includes(a.status)?a.status:"pending")+'">'+escapeHtml(labelStatus(a.status))+'</span></td><td data-label="Acciones"><div class="actions"><select aria-label="Nuevo estado" data-status-for="'+escapeHtml(a.id)+'"><option value="pending" '+(a.status==="pending"?"selected":"")+'>Pendiente</option><option value="confirmed" '+(a.status==="confirmed"?"selected":"")+'>Confirmado</option><option value="cancelled" '+(a.status==="cancelled"?"selected":"")+'>Cancelado</option></select><button data-save="'+escapeHtml(a.id)+'">Guardar</button>'+(whatsappUrl(a)?'<a class="wa-link" href="'+escapeHtml(whatsappUrl(a))+'" target="_blank" rel="noopener noreferrer" aria-label="Abrir WhatsApp para '+escapeHtml(a.customer_name)+'">WhatsApp</a>':'<span class="phone-help" title="Revisá el teléfono e incluí el código de país">Teléfono inválido</span>')+'</div>'+(a.status==="pending"||a.status==="confirmed"?'<div class="reschedule"><input type="date" data-reschedule-date="'+escapeHtml(a.id)+'" value="'+escapeHtml(String(a.preferred_date||"").slice(0,10))+'" aria-label="Nueva fecha para '+escapeHtml(a.customer_name)+'"><input type="time" step="1800" data-reschedule-time="'+escapeHtml(a.id)+'" value="'+escapeHtml(String(a.preferred_time||"").slice(0,5))+'" aria-label="Nuevo horario para '+escapeHtml(a.customer_name)+'"><button type="button" data-reschedule="'+escapeHtml(a.id)+'">Reprogramar</button></div>':'')+'</td></tr>').join(""):'<tr><td colspan="6" class="empty">No hay turnos en este filtro.</td></tr>';
 }
 async function showSession(){
@@ -264,6 +303,8 @@ $("appointments-body").addEventListener("click",async e=>{
   }catch(err){message("dashboard-status",err?.message||"No se pudo actualizar el estado.",true)}
   finally{btn.disabled=false;btn.textContent="Guardar"}
 });
+$("appointment-search").addEventListener("input",render);
+$("appointment-date").addEventListener("change",render);
 document.querySelectorAll("[data-filter]").forEach(btn=>btn.addEventListener("click",()=>{
   filter=btn.dataset.filter;document.querySelectorAll("[data-filter]").forEach(b=>b.setAttribute("aria-pressed",String(b===btn)));render()
 }));
